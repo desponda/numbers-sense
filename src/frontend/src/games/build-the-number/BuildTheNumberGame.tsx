@@ -260,50 +260,60 @@ export const BuildTheNumberGame = ({
   const { allowedBlocks } = difficultyConfig;
 
   // Render available blocks based on difficulty
-  // Shows a small fixed set since blocks infinitely regenerate
-  const renderAvailableBlocks = (): JSX.Element[] => {
-    const blocks: JSX.Element[] = [];
+  // Shows blocks organized by type (hundreds, tens, units) for clarity
+  // Small fixed count since blocks infinitely regenerate
+  const renderAvailableBlocks = (): JSX.Element => {
+    return (
+      <div className="flex flex-col gap-4 w-full">
+        {/* Hundred flats row - hard+ difficulty */}
+        {allowedBlocks.includes('hundred') && (
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-xs text-text-light font-medium">Hundreds (100 each)</span>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {Array.from({ length: 2 }, (_, i) => (
+                <HundredFlat
+                  key={`tray-hundred-${String(i)}`}
+                  id={`tray-hundred-${String(i)}`}
+                  disabled={isAnimating}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
-    // Always show unit cubes (5 of them - enough for interaction, not overwhelming)
-    if (allowedBlocks.includes('unit')) {
-      for (let i = 0; i < 5; i += 1) {
-        blocks.push(
-          <UnitCube
-            key={`tray-unit-${String(i)}`}
-            id={`tray-unit-${String(i)}`}
-            disabled={isAnimating}
-          />,
-        );
-      }
-    }
+        {/* Ten rods row - medium+ difficulty */}
+        {allowedBlocks.includes('ten') && (
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-xs text-text-light font-medium">Tens (10 each)</span>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {Array.from({ length: 3 }, (_, i) => (
+                <TenRod
+                  key={`tray-ten-${String(i)}`}
+                  id={`tray-ten-${String(i)}`}
+                  disabled={isAnimating}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
-    // Show ten rods for medium+ difficulty (3 of them)
-    if (allowedBlocks.includes('ten')) {
-      for (let i = 0; i < 3; i += 1) {
-        blocks.push(
-          <TenRod
-            key={`tray-ten-${String(i)}`}
-            id={`tray-ten-${String(i)}`}
-            disabled={isAnimating}
-          />,
-        );
-      }
-    }
-
-    // Show hundred flats for hard+ difficulty (2 of them)
-    if (allowedBlocks.includes('hundred')) {
-      for (let i = 0; i < 2; i += 1) {
-        blocks.push(
-          <HundredFlat
-            key={`tray-hundred-${String(i)}`}
-            id={`tray-hundred-${String(i)}`}
-            disabled={isAnimating}
-          />,
-        );
-      }
-    }
-
-    return blocks;
+        {/* Unit cubes row - always available */}
+        {allowedBlocks.includes('unit') && (
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-xs text-text-light font-medium">Ones (1 each)</span>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {Array.from({ length: 5 }, (_, i) => (
+                <UnitCube
+                  key={`tray-unit-${String(i)}`}
+                  id={`tray-unit-${String(i)}`}
+                  disabled={isAnimating}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   // Render loading state if session not ready

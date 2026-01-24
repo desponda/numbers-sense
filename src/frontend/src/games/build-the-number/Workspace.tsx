@@ -165,34 +165,92 @@ export const Workspace = ({
           </div>
         )}
 
-        {/* Placed blocks */}
+        {/* Placed blocks - grouped by type for visual clarity */}
         <div
-          className="flex flex-wrap items-center justify-center gap-3"
+          className="flex flex-col items-center gap-4 w-full"
           role="region"
           aria-label={`Workspace with ${String(blocks.length)} blocks, total value ${String(currentValue)}`}
         >
-          {blocks.map((block) => (
-            <button
-              key={block.id}
-              type="button"
-              onClick={() => {
-                handleBlockClick(block.id);
-              }}
-              disabled={disabled}
-              className={`
-                focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-                rounded-lg
-                transition-transform duration-150
-                ${disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-105 active:scale-95'}
-              `}
-              aria-label={`Remove ${block.type} block with value ${String(block.value)}`}
-            >
-              {/* Render appropriate block component based on type */}
-              {block.type === 'unit' && <UnitCube id={block.id} disabled />}
-              {block.type === 'ten' && <TenRod id={block.id} disabled />}
-              {block.type === 'hundred' && <HundredFlat id={block.id} disabled />}
-            </button>
-          ))}
+          {/* Hundreds row */}
+          {blocks.filter((b) => b.type === 'hundred').length > 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {blocks
+                .filter((b) => b.type === 'hundred')
+                .map((block) => (
+                  <button
+                    key={block.id}
+                    type="button"
+                    onClick={() => {
+                      handleBlockClick(block.id);
+                    }}
+                    disabled={disabled}
+                    className={`
+                      focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
+                      rounded-lg
+                      transition-transform duration-150
+                      ${disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-105 active:scale-95'}
+                    `}
+                    aria-label="Remove hundred block with value 100"
+                  >
+                    <HundredFlat id={block.id} disabled />
+                  </button>
+                ))}
+            </div>
+          )}
+
+          {/* Tens row */}
+          {blocks.filter((b) => b.type === 'ten').length > 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {blocks
+                .filter((b) => b.type === 'ten')
+                .map((block) => (
+                  <button
+                    key={block.id}
+                    type="button"
+                    onClick={() => {
+                      handleBlockClick(block.id);
+                    }}
+                    disabled={disabled}
+                    className={`
+                      focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
+                      rounded-lg
+                      transition-transform duration-150
+                      ${disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-105 active:scale-95'}
+                    `}
+                    aria-label="Remove ten block with value 10"
+                  >
+                    <TenRod id={block.id} disabled />
+                  </button>
+                ))}
+            </div>
+          )}
+
+          {/* Units row */}
+          {blocks.filter((b) => b.type === 'unit').length > 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {blocks
+                .filter((b) => b.type === 'unit')
+                .map((block) => (
+                  <button
+                    key={block.id}
+                    type="button"
+                    onClick={() => {
+                      handleBlockClick(block.id);
+                    }}
+                    disabled={disabled}
+                    className={`
+                      focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
+                      rounded-lg
+                      transition-transform duration-150
+                      ${disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-105 active:scale-95'}
+                    `}
+                    aria-label="Remove unit block with value 1"
+                  >
+                    <UnitCube id={block.id} disabled />
+                  </button>
+                ))}
+            </div>
+          )}
         </div>
 
         {/* Screen reader live region for changes */}
