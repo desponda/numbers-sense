@@ -1,14 +1,8 @@
 {
   "name": "NumberSense Development",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20-bookworm",
 
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
-      "kubectl": "latest",
-      "helm": "latest",
-      "minikube": "none"
-    },
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
 
