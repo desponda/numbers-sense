@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/desponda/numbers-sense
   pullPolicy: Always
-  tag: "3eaeea0"
+  tag: "8c37b39"
 
 imagePullSecrets: []  # No secrets needed - image is public
 nameOverride: ""
