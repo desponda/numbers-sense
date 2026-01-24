@@ -103,8 +103,11 @@ describe('MultipleChoiceGrid', () => {
       const user = userEvent.setup();
       render(<MultipleChoiceGrid {...defaultProps} disabled />);
 
-      const button = screen.getByText('56');
-      await user.click(button);
+      const buttons = screen.getAllByRole('radio');
+      const secondButton = buttons[1];
+      if (secondButton) {
+        await user.click(secondButton);
+      }
 
       expect(mockOnSelect).not.toHaveBeenCalled();
     });
@@ -123,7 +126,8 @@ describe('MultipleChoiceGrid', () => {
 
       const buttons = screen.getAllByRole('radio');
       buttons.forEach((button) => {
-        expect(button).toHaveClass('opacity-50');
+        // Check for the Tailwind disabled variant class
+        expect(button.className).toContain('disabled:opacity-50');
       });
     });
   });
@@ -150,21 +154,26 @@ describe('MultipleChoiceGrid', () => {
       const user = userEvent.setup();
       render(<MultipleChoiceGrid {...defaultProps} />);
 
+      const buttons = screen.getAllByRole('radio');
+
       // Tab through all buttons
       await user.tab();
-      expect(screen.getByText('48')).toHaveFocus();
+      expect(buttons[0]).toHaveFocus();
 
       await user.tab();
-      expect(screen.getByText('56')).toHaveFocus();
+      expect(buttons[1]).toHaveFocus();
     });
 
     it('Enter key selects option', async () => {
       const user = userEvent.setup();
       render(<MultipleChoiceGrid {...defaultProps} />);
 
-      const button = screen.getByText('56');
-      button.focus();
-      await user.keyboard('{Enter}');
+      const buttons = screen.getAllByRole('radio');
+      const secondButton = buttons[1];
+      if (secondButton) {
+        secondButton.focus();
+        await user.keyboard('{Enter}');
+      }
 
       expect(mockOnSelect).toHaveBeenCalledWith(1);
     });
@@ -173,9 +182,12 @@ describe('MultipleChoiceGrid', () => {
       const user = userEvent.setup();
       render(<MultipleChoiceGrid {...defaultProps} />);
 
-      const button = screen.getByText('56');
-      button.focus();
-      await user.keyboard(' ');
+      const buttons = screen.getAllByRole('radio');
+      const secondButton = buttons[1];
+      if (secondButton) {
+        secondButton.focus();
+        await user.keyboard(' ');
+      }
 
       expect(mockOnSelect).toHaveBeenCalledWith(1);
     });
@@ -204,23 +216,24 @@ describe('MultipleChoiceGrid', () => {
     it('selected button shows primary variant styling', () => {
       render(<MultipleChoiceGrid {...defaultProps} selectedIndex={1} />);
 
-      const selectedButton = screen.getByText('56');
-      const classes = selectedButton.className;
-      expect(classes).toContain('bg-primary');
+      const buttons = screen.getAllByRole('radio');
+      const selectedButton = buttons[1]; // Index 1 is selected
+      expect(selectedButton).toHaveClass('bg-primary');
     });
 
     it('unselected buttons show secondary variant styling', () => {
       render(<MultipleChoiceGrid {...defaultProps} selectedIndex={1} />);
 
-      const unselectedButton = screen.getByText('48');
-      const classes = unselectedButton.className;
-      expect(classes).toContain('bg-secondary');
+      const buttons = screen.getAllByRole('radio');
+      const unselectedButton = buttons[0]; // Index 0 is not selected
+      expect(unselectedButton).toHaveClass('bg-secondary');
     });
 
     it('selected button has focus ring styling', () => {
       render(<MultipleChoiceGrid {...defaultProps} selectedIndex={1} />);
 
-      const selectedButton = screen.getByText('56');
+      const buttons = screen.getAllByRole('radio');
+      const selectedButton = buttons[1];
       expect(selectedButton).toHaveClass('ring-2');
       expect(selectedButton).toHaveClass('ring-primary');
     });
@@ -338,9 +351,9 @@ describe('MultipleChoiceGrid', () => {
     it('highlights selected button', () => {
       render(<MultipleChoiceGrid {...defaultProps} selectedIndex={2} />);
 
-      const selectedButton = screen.getByText('63');
-      const classes = selectedButton.className;
-      expect(classes).toContain('bg-primary');
+      const buttons = screen.getAllByRole('radio');
+      const selectedButton = buttons[2]; // Index 2 is selected
+      expect(selectedButton).toHaveClass('bg-primary');
       expect(selectedButton).toHaveClass('ring-2');
     });
 

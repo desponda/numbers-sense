@@ -75,12 +75,13 @@ export const RaceGame = ({
   className = '',
 }: RaceGameProps): JSX.Element => {
   const store = useRaceGameStore();
+  const initializeGame = useRaceGameStore((state) => state.initializeGame);
   const audio = useGameAudio();
 
   // Initialize game on mount or when props change
   useEffect(() => {
-    store.initializeGame(gameType, difficulty);
-  }, [store, gameType, difficulty]);
+    initializeGame(gameType, difficulty);
+  }, [initializeGame, gameType, difficulty]);
 
   // Handle answer submission
   const handleAnswer = (selectedIndex: number): void => {
@@ -112,6 +113,8 @@ export const RaceGame = ({
       audio.playSound('correct'); // Victory sound
       onComplete?.(stats);
     }
+    // Note: audio.playSound is stable (useCallback), no need in deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     store.status,
     store.totalCorrect,
@@ -119,7 +122,6 @@ export const RaceGame = ({
     store.endTime,
     store.startTime,
     onComplete,
-    audio,
   ]);
 
   return (

@@ -27,32 +27,84 @@ interface DifficultyOption {
   color: string;
 }
 
-const DIFFICULTY_OPTIONS: DifficultyOption[] = [
-  {
-    mode: 'easy',
-    label: 'Easy',
-    description: 'Numbers 1-10, unit blocks only',
-    color: 'bg-success/20 border-success hover:bg-success/30',
-  },
-  {
-    mode: 'medium',
-    label: 'Medium',
-    description: 'Numbers 1-20, units and tens',
-    color: 'bg-primary/20 border-primary hover:bg-primary/30',
-  },
-  {
-    mode: 'hard',
-    label: 'Hard',
-    description: 'Numbers 1-100, all block types',
-    color: 'bg-secondary/20 border-secondary hover:bg-secondary/30',
-  },
-  {
-    mode: 'challenge',
-    label: 'Challenge',
-    description: 'Numbers 1-100, timed mode',
-    color: 'bg-accent/20 border-accent hover:bg-accent/30',
-  },
-];
+/**
+ * Get difficulty options based on game type
+ */
+const getDifficultyOptions = (gameType: GameType | null): DifficultyOption[] => {
+  if (gameType === 'multiplication-race') {
+    return [
+      {
+        mode: 'easy',
+        label: 'Easy',
+        description: 'Times tables 0-5 only',
+        color: 'bg-success/20 border-success hover:bg-success/30',
+      },
+      {
+        mode: 'medium',
+        label: 'Medium',
+        description: 'All times tables 0-9',
+        color: 'bg-primary/20 border-primary hover:bg-primary/30',
+      },
+      {
+        mode: 'hard',
+        label: 'Hard',
+        description: 'All tables, 3× repetitions',
+        color: 'bg-secondary/20 border-secondary hover:bg-secondary/30',
+      },
+    ];
+  }
+
+  if (gameType === 'division-race') {
+    return [
+      {
+        mode: 'easy',
+        label: 'Easy',
+        description: 'Division by 1-5 only',
+        color: 'bg-success/20 border-success hover:bg-success/30',
+      },
+      {
+        mode: 'medium',
+        label: 'Medium',
+        description: 'All division facts 1-9',
+        color: 'bg-primary/20 border-primary hover:bg-primary/30',
+      },
+      {
+        mode: 'hard',
+        label: 'Hard',
+        description: 'All facts, 3× repetitions',
+        color: 'bg-secondary/20 border-secondary hover:bg-secondary/30',
+      },
+    ];
+  }
+
+  // Default for Build the Number and Sort the Numbers
+  return [
+    {
+      mode: 'easy',
+      label: 'Easy',
+      description: 'Numbers 1-10, unit blocks only',
+      color: 'bg-success/20 border-success hover:bg-success/30',
+    },
+    {
+      mode: 'medium',
+      label: 'Medium',
+      description: 'Numbers 1-20, units and tens',
+      color: 'bg-primary/20 border-primary hover:bg-primary/30',
+    },
+    {
+      mode: 'hard',
+      label: 'Hard',
+      description: 'Numbers 1-100, all block types',
+      color: 'bg-secondary/20 border-secondary hover:bg-secondary/30',
+    },
+    {
+      mode: 'challenge',
+      label: 'Challenge',
+      description: 'Numbers 1-100, timed mode',
+      color: 'bg-accent/20 border-accent hover:bg-accent/30',
+    },
+  ];
+};
 
 /**
  * Main App component with simple routing state
@@ -132,45 +184,49 @@ export const App = (): JSX.Element => {
   };
 
   // Render difficulty selector
-  const renderDifficultySelector = (): JSX.Element => (
-    <div className="flex flex-col gap-6 max-w-md mx-auto p-6">
-      <h2 className="text-2xl font-bold text-center text-text-primary">{getGameTitle()}</h2>
-      <p className="text-center text-text-secondary">Select a difficulty level:</p>
-      <div className="flex flex-col gap-4">
-        {DIFFICULTY_OPTIONS.map((option) => (
-          <button
-            key={option.mode}
-            type="button"
-            onClick={() => {
-              handleSelectDifficulty(option.mode);
-            }}
-            className={`
+  const renderDifficultySelector = (): JSX.Element => {
+    const difficultyOptions = getDifficultyOptions(selectedGame);
+
+    return (
+      <div className="flex flex-col gap-6 max-w-md mx-auto p-6">
+        <h2 className="text-2xl font-bold text-center text-text-primary">{getGameTitle()}</h2>
+        <p className="text-center text-text-secondary">Select a difficulty level:</p>
+        <div className="flex flex-col gap-4">
+          {difficultyOptions.map((option) => (
+            <button
+              key={option.mode}
+              type="button"
+              onClick={() => {
+                handleSelectDifficulty(option.mode);
+              }}
+              className={`
               p-6 rounded-2xl border-2 text-left
               transition-all duration-200
               focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
               ${option.color}
             `}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-xl font-bold text-text-primary">{option.label}</h3>
-                <p className="text-text-secondary mt-1">{option.description}</p>
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-text-primary">{option.label}</h3>
+                  <p className="text-text-secondary mt-1">{option.description}</p>
+                </div>
+                <div className="text-3xl">
+                  {option.mode === 'easy' && '🌱'}
+                  {option.mode === 'medium' && '🌿'}
+                  {option.mode === 'hard' && '🌳'}
+                  {option.mode === 'challenge' && '⏱️'}
+                </div>
               </div>
-              <div className="text-3xl">
-                {option.mode === 'easy' && '🌱'}
-                {option.mode === 'medium' && '🌿'}
-                {option.mode === 'hard' && '🌳'}
-                {option.mode === 'challenge' && '⏱️'}
-              </div>
-            </div>
-          </button>
-        ))}
+            </button>
+          ))}
+        </div>
+        <Button variant="secondary" onClick={handleGoHome} className="mt-4">
+          Back to Menu
+        </Button>
       </div>
-      <Button variant="secondary" onClick={handleGoHome} className="mt-4">
-        Back to Menu
-      </Button>
-    </div>
-  );
+    );
+  };
 
   // Map difficulty for race games (they don't support 'challenge')
   const getRaceDifficulty = (): 'easy' | 'medium' | 'hard' => {

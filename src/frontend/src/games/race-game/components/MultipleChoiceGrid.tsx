@@ -56,6 +56,18 @@ export const MultipleChoiceGrid = ({
   disabled = false,
   className = '',
 }: MultipleChoiceGridProps): JSX.Element => {
+  const handleKeyDown = (event: React.KeyboardEvent, index: number): void => {
+    if (disabled) {
+      return;
+    }
+
+    // Handle Enter and Space keys
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onSelect(index);
+    }
+  };
+
   return (
     <div
       className={`
@@ -72,6 +84,9 @@ export const MultipleChoiceGrid = ({
           size="lg"
           onClick={() => {
             onSelect(index);
+          }}
+          onKeyDown={(event) => {
+            handleKeyDown(event, index);
           }}
           disabled={disabled}
           className={`
