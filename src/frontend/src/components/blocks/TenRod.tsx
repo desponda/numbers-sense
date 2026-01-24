@@ -51,7 +51,7 @@ export const TenRod = ({ id, disabled = false, className = '' }: TenRodProps): J
           flex items-center justify-center
           select-none
           transition-transform duration-150 ease-out
-          ${disabled ? 'opacity-50' : 'hover:scale-[1.02]'}
+          ${disabled ? 'hover:scale-[1.02]' : 'opacity-70 hover:opacity-100 hover:scale-[1.02]'}
         `}
         style={{
           width: '200px',

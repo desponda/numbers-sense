@@ -65,7 +65,7 @@ export const HundredFlat = ({
           shadow-md
           select-none
           transition-transform duration-150 ease-out
-          ${disabled ? 'opacity-50' : 'hover:scale-[1.01]'}
+          ${disabled ? 'hover:scale-[1.01]' : 'opacity-70 hover:opacity-100 hover:scale-[1.01]'}
         `}
         style={{
           width: 'fit-content',

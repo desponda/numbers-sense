@@ -50,7 +50,7 @@ export const UnitCube = ({ id, disabled = false, className = '' }: UnitCubeProps
           shadow-md
           select-none
           transition-transform duration-150 ease-out
-          ${disabled ? 'opacity-50' : 'hover:scale-105'}
+          ${disabled ? 'hover:scale-105' : 'opacity-70 hover:opacity-100 hover:scale-105'}
         `}
         style={{
           width: '40px',
