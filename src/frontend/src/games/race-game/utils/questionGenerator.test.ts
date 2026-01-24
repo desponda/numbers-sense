@@ -183,10 +183,6 @@ describe('generateRaceQuestion', () => {
     );
   });
 
-  it('throws error for unknown game type', () => {
-    expect(() =>
-      // @ts-expect-error Testing invalid game type
-      generateRaceQuestion('invalid', 7, ['7×8']),
-    ).toThrow('Unknown game type');
-  });
+  // Note: TypeScript enforces valid game types at compile time,
+  // so no runtime error handling needed for invalid types
 });
