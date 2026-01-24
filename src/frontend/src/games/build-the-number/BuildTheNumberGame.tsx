@@ -11,6 +11,7 @@ import {
   type BlockType,
   type DifficultyMode,
 } from '../../game-engine';
+import { useGameAudio } from '../../hooks';
 
 import { GameControls } from './GameControls';
 import { TargetDisplay } from './TargetDisplay';
@@ -120,6 +121,9 @@ export const BuildTheNumberGame = ({
     hintsUsed,
   } = useGameSessionStore();
 
+  // Audio feedback
+  const { playSound } = useGameAudio();
+
   // Local UI state
   const [feedback, setFeedback] = useState<{
     type: 'correct' | 'incorrect' | 'hint' | null;
@@ -170,27 +174,30 @@ export const BuildTheNumberGame = ({
             value: blockValue as 1 | 10 | 100,
           };
           addBlock(newBlock);
+          playSound('blockDrop');
           setFeedback({ type: null, message: '' });
         }
       }
     },
-    [addBlock, generateBlockId],
+    [addBlock, generateBlockId, playSound],
   );
 
   // Handle block removal from workspace
   const handleBlockRemove = useCallback(
     (blockId: string) => {
       removeBlock(blockId);
+      playSound('blockPickup');
       setFeedback({ type: null, message: '' });
     },
-    [removeBlock],
+    [removeBlock, playSound],
   );
 
   // Handle clear workspace
   const handleClear = useCallback(() => {
     clearWorkspace();
+    playSound('clear');
     setFeedback({ type: null, message: '' });
-  }, [clearWorkspace]);
+  }, [clearWorkspace, playSound]);
 
   // Handle check answer
   const handleCheckAnswer = useCallback(() => {
@@ -198,7 +205,8 @@ export const BuildTheNumberGame = ({
     setIsAnimating(true);
 
     if (attempt.isCorrect) {
-      // Correct answer
+      // Correct answer - play celebration sound
+      playSound('correct');
       setFeedback({
         type: 'correct',
         message: getRandomMessage(FEEDBACK_MESSAGES.correct),
@@ -225,7 +233,8 @@ export const BuildTheNumberGame = ({
         setIsAnimating(false);
       }, 2000);
     } else {
-      // Incorrect answer - encourage retry
+      // Incorrect answer - gentle sound, encourage retry
+      playSound('incorrect');
       setFeedback({
         type: 'incorrect',
         message: getRandomMessage(FEEDBACK_MESSAGES.incorrect),
@@ -244,72 +253,49 @@ export const BuildTheNumberGame = ({
     session?.problemsCompleted,
     setProblem,
     difficulty,
+    playSound,
   ]);
 
   // Handle hint request
   const handleHint = useCallback(() => {
     recordHintUsage();
+    playSound('hint');
     setFeedback({
       type: 'hint',
       message: getRandomMessage(FEEDBACK_MESSAGES.hint),
     });
-  }, [recordHintUsage]);
+  }, [recordHintUsage, playSound]);
 
   // Get allowed block types for current difficulty
   const difficultyConfig = DIFFICULTY_CONFIGS[difficulty];
   const { allowedBlocks } = difficultyConfig;
 
   // Render available blocks based on difficulty
-  // Shows blocks organized by type (hundreds, tens, units) for clarity
-  // Small fixed count since blocks infinitely regenerate
+  // Only 1 of each type since blocks infinitely regenerate after drag
   const renderAvailableBlocks = (): JSX.Element => {
     return (
-      <div className="flex flex-col gap-4 w-full">
-        {/* Hundred flats row - hard+ difficulty */}
+      <div className="flex flex-wrap items-center justify-center gap-6 w-full">
+        {/* Hundred flat - hard+ difficulty */}
         {allowedBlocks.includes('hundred') && (
           <div className="flex flex-col items-center gap-2">
-            <span className="text-xs text-text-light font-medium">Hundreds (100 each)</span>
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              {Array.from({ length: 2 }, (_, i) => (
-                <HundredFlat
-                  key={`tray-hundred-${String(i)}`}
-                  id={`tray-hundred-${String(i)}`}
-                  disabled={isAnimating}
-                />
-              ))}
-            </div>
+            <HundredFlat key="tray-hundred" id="tray-hundred" disabled={isAnimating} />
+            <span className="text-xs text-text-light font-medium">= 100</span>
           </div>
         )}
 
-        {/* Ten rods row - medium+ difficulty */}
+        {/* Ten rod - medium+ difficulty */}
         {allowedBlocks.includes('ten') && (
           <div className="flex flex-col items-center gap-2">
-            <span className="text-xs text-text-light font-medium">Tens (10 each)</span>
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              {Array.from({ length: 3 }, (_, i) => (
-                <TenRod
-                  key={`tray-ten-${String(i)}`}
-                  id={`tray-ten-${String(i)}`}
-                  disabled={isAnimating}
-                />
-              ))}
-            </div>
+            <TenRod key="tray-ten" id="tray-ten" disabled={isAnimating} />
+            <span className="text-xs text-text-light font-medium">= 10</span>
           </div>
         )}
 
-        {/* Unit cubes row - always available */}
+        {/* Unit cube - always available */}
         {allowedBlocks.includes('unit') && (
           <div className="flex flex-col items-center gap-2">
-            <span className="text-xs text-text-light font-medium">Ones (1 each)</span>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {Array.from({ length: 5 }, (_, i) => (
-                <UnitCube
-                  key={`tray-unit-${String(i)}`}
-                  id={`tray-unit-${String(i)}`}
-                  disabled={isAnimating}
-                />
-              ))}
-            </div>
+            <UnitCube key="tray-unit" id="tray-unit" disabled={isAnimating} />
+            <span className="text-xs text-text-light font-medium">= 1</span>
           </div>
         )}
       </div>
