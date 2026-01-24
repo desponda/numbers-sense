@@ -46,7 +46,7 @@ export const BlockTray = ({
   children,
   disabled = false,
   className = '',
-  title = 'Block Tray',
+  title,
 }: BlockTrayProps): JSX.Element => {
   return (
     <Droppable
@@ -55,17 +55,17 @@ export const BlockTray = ({
       disabled={disabled}
       className={`
         relative
-        bg-background-cream
-        border-2 border-dashed border-text-light
+        bg-white/50
+        border-2 border-dashed border-text-light/50
         rounded-2xl
-        p-content-lg
+        p-4
         transition-all duration-150 ease-out
         ${disabled ? 'opacity-50' : ''}
         ${className}
       `}
       styles={{
         default: {
-          minHeight: '120px',
+          minHeight: '80px',
         },
         over: {
           borderColor: 'rgb(107, 154, 232)',
@@ -76,14 +76,14 @@ export const BlockTray = ({
         },
       }}
     >
-      {/* Tray label */}
-      {title && (
+      {/* Optional tray label - only show if provided */}
+      {title !== undefined && title !== '' && (
         <div
           className="
-            absolute -top-3 left-4
+            absolute -top-2.5 left-4
             px-2
             bg-background-cream
-            text-text-secondary text-sm font-medium
+            text-text-light text-xs
           "
           aria-hidden="true"
         >
@@ -94,20 +94,17 @@ export const BlockTray = ({
       {/* Tray content area */}
       <div
         className="
-          flex flex-wrap items-center justify-center gap-gap-lg
-          min-h-touch-lg
+          flex flex-wrap items-center justify-center
+          min-h-[60px]
         "
         role="region"
-        aria-label={`${title} - contains draggable blocks`}
+        aria-label="Block tray - drag blocks to build your number"
       >
         {children}
       </div>
 
       {/* Screen reader description */}
-      <div className="sr-only">
-        Drag blocks from this tray to the workspace. You can also drop blocks back here to remove
-        them.
-      </div>
+      <div className="sr-only">Drag blocks from this tray to the workspace.</div>
     </Droppable>
   );
 };

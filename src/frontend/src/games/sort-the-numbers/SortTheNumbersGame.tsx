@@ -162,6 +162,8 @@ export const SortTheNumbersGame = ({
   const [isChecking, setIsChecking] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [localAttempts, setLocalAttempts] = useState(0);
+  const [roundsCompleted, setRoundsCompleted] = useState(0);
+  const [totalCorrect, setTotalCorrect] = useState(0);
 
   // Get difficulty config
   const config = DIFFICULTY_CONFIG[difficulty];
@@ -263,6 +265,7 @@ export const SortTheNumbersGame = ({
 
       if (isCorrect) {
         setShowSuccess(true);
+        setTotalCorrect((prev) => prev + 1);
         completeProblem(true);
 
         // If in visual phase and correct, transition to numeric phase
@@ -271,10 +274,15 @@ export const SortTheNumbersGame = ({
             handlePhaseChange('numeric');
           }, 1500);
         } else {
-          // Numeric phase complete - call onComplete
+          // Numeric phase complete - start new round
+          setRoundsCompleted((prev) => prev + 1);
+          onComplete?.(true, localAttempts + 1);
+
+          // Auto-advance to next round after celebration
           setTimeout(() => {
-            onComplete?.(true, localAttempts + 1);
-          }, 1500);
+            setPhase('visual');
+            generateProblem();
+          }, 2000);
         }
       }
 
@@ -288,6 +296,7 @@ export const SortTheNumbersGame = ({
     handlePhaseChange,
     onComplete,
     localAttempts,
+    generateProblem,
   ]);
 
   // Handle try again (generate new problem)
@@ -312,9 +321,9 @@ export const SortTheNumbersGame = ({
             ? 'Put the blocks in order from smallest to biggest!'
             : 'Put the numbers in order from smallest to biggest!'}
         </p>
-        <div className="mt-2 text-sm text-text-muted">
-          Phase: {phase === 'visual' ? 'Block Sorting' : 'Number Sorting'} | Attempts:{' '}
-          {localAttempts}
+        <div className="mt-2 flex justify-center gap-4 text-sm">
+          <span className="text-text-muted">Round: {roundsCompleted + 1}</span>
+          <span className="text-success font-medium">Score: {totalCorrect}</span>
         </div>
       </div>
 
@@ -394,9 +403,7 @@ export const SortTheNumbersGame = ({
           <div className="text-center animate-celebrate">
             <div className="text-2xl font-bold text-success mb-2">Great Job!</div>
             <p className="text-text-secondary">
-              {phase === 'visual'
-                ? 'Now try sorting just the numbers!'
-                : 'You sorted all the numbers correctly!'}
+              {phase === 'visual' ? 'Now try sorting just the numbers!' : 'Loading next round...'}
             </p>
           </div>
         )}

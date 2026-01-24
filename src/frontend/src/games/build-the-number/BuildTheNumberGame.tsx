@@ -272,30 +272,31 @@ export const BuildTheNumberGame = ({
 
   // Render available blocks based on difficulty
   // Only 1 of each type since blocks infinitely regenerate after drag
+  // Clean horizontal layout with subtle labels
   const renderAvailableBlocks = (): JSX.Element => {
     return (
-      <div className="flex flex-wrap items-center justify-center gap-6 w-full">
+      <div className="flex items-end justify-center gap-8">
         {/* Hundred flat - hard+ difficulty */}
         {allowedBlocks.includes('hundred') && (
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center">
             <HundredFlat key="tray-hundred" id="tray-hundred" disabled={isAnimating} />
-            <span className="text-xs text-text-light font-medium">= 100</span>
+            <span className="text-xs text-text-light mt-1">100</span>
           </div>
         )}
 
         {/* Ten rod - medium+ difficulty */}
         {allowedBlocks.includes('ten') && (
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center">
             <TenRod key="tray-ten" id="tray-ten" disabled={isAnimating} />
-            <span className="text-xs text-text-light font-medium">= 10</span>
+            <span className="text-xs text-text-light mt-1">10</span>
           </div>
         )}
 
         {/* Unit cube - always available */}
         {allowedBlocks.includes('unit') && (
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center">
             <UnitCube key="tray-unit" id="tray-unit" disabled={isAnimating} />
-            <span className="text-xs text-text-light font-medium">= 1</span>
+            <span className="text-xs text-text-light mt-1">1</span>
           </div>
         )}
       </div>
@@ -368,9 +369,7 @@ export const BuildTheNumberGame = ({
         />
 
         {/* Block tray - draggable blocks */}
-        <BlockTray id="block-tray" title="Drag blocks to workspace">
-          {renderAvailableBlocks()}
-        </BlockTray>
+        <BlockTray id="block-tray">{renderAvailableBlocks()}</BlockTray>
 
         {/* Game controls */}
         <GameControls
