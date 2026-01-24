@@ -154,7 +154,7 @@ export const App = (): JSX.Element => {
       case 'build-number':
         return <BuildTheNumberGame difficulty={difficulty} onSessionEnd={handleGoHome} />;
       case 'sort-numbers':
-        return <SortTheNumbersGame difficulty={difficulty} onComplete={handleGoHome} />;
+        return <SortTheNumbersGame difficulty={difficulty} />;
       default:
         return <GameMenu onSelectGame={handleSelectGame} />;
     }
