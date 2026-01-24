@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Cache
+.cache/
+.eslintcache
+
+# Coverage
+coverage/
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Generated files
+*.min.js
+*.min.css
+
+# Assets
+public/
+*.svg
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.woff
+*.woff2
+*.ttf
+*.eot

@@ -1,0 +1,264 @@
+/* Import Nunito font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
+/* Tailwind CSS layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base layer customizations for children's app */
+@layer base {
+  :root {
+    /* CSS custom properties for design tokens */
+    --color-primary: #6b9ae8;
+    --color-secondary: #e8927c;
+    --color-success: #7ec88b;
+    --color-background: #f8f6f0;
+    --color-text: #2d3748;
+
+    /* Block colors */
+    --color-block-unit: #64b5c6;
+    --color-block-ten: #a78bca;
+    --color-block-hundred: #e8a07c;
+
+    /* Touch target sizes */
+    --touch-target-min: 48px;
+    --touch-target-recommended: 64px;
+
+    /* Animation durations */
+    --duration-fast: 150ms;
+    --duration-normal: 300ms;
+    --duration-slow: 500ms;
+
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Reset and base styles */
+  *,
+  *::before,
+  *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    /* Base font size for children - larger for readability */
+    font-size: 18px;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-text;
+    min-width: 320px;
+    min-height: 100vh;
+    line-height: 1.6;
+    /* Prevent text selection on interactive elements for children */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Headings - bold and friendly */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold text-text-primary;
+    line-height: 1.2;
+  }
+
+  h1 {
+    @apply text-3xl;
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
+
+  h3 {
+    @apply text-xl;
+  }
+
+  /* Links - accessible and visible */
+  a {
+    @apply text-primary underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+  }
+
+  a:hover {
+    @apply text-primary-600;
+  }
+
+  a:focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 rounded;
+  }
+
+  /* Buttons - ensure touch targets */
+  button {
+    @apply min-h-touch min-w-touch;
+    touch-action: manipulation;
+  }
+
+  /* Focus styles - visible for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2;
+  }
+
+  /* Remove default focus outline (we use ring instead) */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Images - prevent dragging in educational context */
+  img {
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
+  /* Disable text selection on game elements */
+  .no-select {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+/* Component layer - reusable component styles */
+@layer components {
+  /* Primary button - large touch target for children */
+  .btn-primary {
+    @apply min-h-touch-lg min-w-touch-lg px-6 py-3;
+    @apply bg-primary text-white font-semibold;
+    @apply rounded-xl shadow-soft;
+    @apply transition-all duration-normal;
+    @apply hover:bg-primary-600 hover:shadow-medium;
+    @apply active:scale-95;
+    @apply focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  }
+
+  /* Secondary button - for "try again" actions */
+  .btn-secondary {
+    @apply min-h-touch-lg min-w-touch-lg px-6 py-3;
+    @apply bg-secondary text-white font-semibold;
+    @apply rounded-xl shadow-soft;
+    @apply transition-all duration-normal;
+    @apply hover:bg-secondary-600 hover:shadow-medium;
+    @apply active:scale-95;
+    @apply focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2;
+  }
+
+  /* Success button - for correct answers */
+  .btn-success {
+    @apply min-h-touch-lg min-w-touch-lg px-6 py-3;
+    @apply bg-success text-white font-semibold;
+    @apply rounded-xl shadow-soft;
+    @apply transition-all duration-normal;
+    @apply hover:bg-success-600 hover:shadow-medium;
+    @apply active:scale-95;
+    @apply focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2;
+  }
+
+  /* Card - content container with subtle shadow */
+  .card {
+    @apply bg-white rounded-2xl shadow-soft p-content-lg;
+  }
+
+  /* Game container - main game area */
+  .game-container {
+    @apply flex flex-col items-center justify-center;
+    @apply p-content-lg gap-gap-lg;
+    @apply min-h-[calc(100vh-120px)];
+  }
+
+  /* Math number display - large readable numbers */
+  .math-number {
+    @apply text-math font-bold text-text-primary;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .math-number-lg {
+    @apply text-math-xl font-bold text-text-primary;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Base-10 block styles */
+  .block-unit {
+    @apply bg-blocks-unit rounded-md shadow-soft;
+  }
+
+  .block-ten {
+    @apply bg-blocks-ten rounded-md shadow-soft;
+  }
+
+  .block-hundred {
+    @apply bg-blocks-hundred rounded-lg shadow-soft;
+  }
+
+  /* Touch target helper - ensures minimum touch size */
+  .touch-target {
+    @apply min-h-touch min-w-touch;
+    @apply flex items-center justify-center;
+  }
+
+  .touch-target-lg {
+    @apply min-h-touch-lg min-w-touch-lg;
+    @apply flex items-center justify-center;
+  }
+
+  /* Interactive element - for draggable/clickable game pieces */
+  .interactive {
+    @apply cursor-pointer select-none;
+    @apply transition-transform duration-fast;
+    @apply hover:scale-105;
+    @apply active:scale-95;
+    touch-action: manipulation;
+  }
+}
+
+/* Utility layer - custom utilities */
+@layer utilities {
+  /* Safe area padding for mobile devices */
+  .safe-area-inset {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Prevent overscroll on game screens */
+  .no-overscroll {
+    overscroll-behavior: none;
+  }
+
+  /* Center content helper */
+  .center-content {
+    @apply flex items-center justify-center;
+  }
+
+  /* Animation helpers */
+  .animate-enter {
+    @apply animate-pop;
+  }
+
+  .animate-feedback {
+    @apply animate-bounce-gentle;
+  }
+
+  .animate-correct {
+    @apply animate-celebrate;
+  }
+
+  .animate-try-again {
+    @apply animate-wiggle;
+  }
+}
