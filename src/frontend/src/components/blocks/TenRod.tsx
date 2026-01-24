@@ -4,11 +4,12 @@ import { Draggable } from '../dnd';
 
 /**
  * Block colors - pedagogically aligned with learning-science-principles.md
- * The ten rod uses a cohesive teal color with subtle segment markers
+ * Ten rods use distinct coral color for quick visual discrimination
+ * while the segment lines show the 10 units clearly
  */
 const BLOCK_COLORS = {
-  rod: '#4ECDC4', // Teal - consistent with unit cubes
-  rodDark: '#3BB5AD', // Darker teal for segment lines
+  rod: '#FF8C6B', // Coral/salmon - distinct from teal units
+  rodDark: '#E67A5B', // Darker coral for segment lines
   highlight: 'rgba(255, 255, 255, 0.4)', // 3D highlight effect
 } as const;
 
@@ -28,15 +29,15 @@ export interface TenRodProps {
  * TenRod - Ten rod block representing the value 10.
  *
  * Design specifications (based on learning-science-principles.md):
- * - Single unified bar with subtle segment markers (like real Dienes blocks)
- * - 10 segments indicated by subtle vertical lines
- * - Same teal color as UnitCube to show connection
- * - Sleek, proportional design (10x width of unit cube)
+ * - Shows 10 clearly visible segments (each the width of a unit cube)
+ * - Uses coral/salmon color distinct from teal units for quick discrimination
+ * - Segment lines make the "10 ones" relationship visible
+ * - Proportional to unit cubes (10x wider)
  *
  * Pedagogical rationale:
  * - "Proportional materials help children understand the multiplicative
  *   relationship between place values" - Fuson & Briars (1990)
- * - Visual consistency helps children see that a ten rod IS 10 unit cubes
+ * - Different color allows quick visual counting of tens vs ones
  *
  * @example
  * ```tsx
