@@ -4,12 +4,12 @@ import { Draggable } from '../dnd';
 
 /**
  * Block colors - pedagogically aligned with learning-science-principles.md
- * The ten rod uses unit cube color (#4ECDC4) for segments to show "10 ones = 1 ten"
- * with a subtle coral frame (#FF6B6B) to indicate grouping
+ * The ten rod uses a cohesive teal color with subtle segment markers
  */
 const BLOCK_COLORS = {
-  unitCube: '#4ECDC4', // Teal - same as unit cubes to show connection
-  tenFrame: '#FF6B6B', // Coral - subtle frame showing they're grouped
+  rod: '#4ECDC4', // Teal - consistent with unit cubes
+  rodDark: '#3BB5AD', // Darker teal for segment lines
+  highlight: 'rgba(255, 255, 255, 0.4)', // 3D highlight effect
 } as const;
 
 /**
@@ -28,11 +28,10 @@ export interface TenRodProps {
  * TenRod - Ten rod block representing the value 10.
  *
  * Design specifications (based on learning-science-principles.md):
- * - Shows 10 clearly visible unit cubes in a row
- * - Each segment uses the SAME color as UnitCube (#4ECDC4) to reinforce
- *   the connection that "10 ones = 1 ten"
- * - Subtle coral frame indicates grouping
- * - Proportional to unit cubes (10x wider)
+ * - Single unified bar with subtle segment markers (like real Dienes blocks)
+ * - 10 segments indicated by subtle vertical lines
+ * - Same teal color as UnitCube to show connection
+ * - Sleek, proportional design (10x width of unit cube)
  *
  * Pedagogical rationale:
  * - "Proportional materials help children understand the multiplicative
@@ -45,54 +44,66 @@ export interface TenRodProps {
  * ```
  */
 export const TenRod = ({ id, disabled = false, className = '' }: TenRodProps): JSX.Element => {
-  // Generate 10 segment elements - each visually matching a unit cube
-  const segments = Array.from({ length: 10 }, (_, index) => index);
-
   return (
     <Draggable id={id} data={{ type: 'ten', value: 10 }} disabled={disabled} className={className}>
       <div
         className={`
-          min-h-touch-lg
           flex items-center justify-center
-          rounded-lg
-          shadow-md
           select-none
           transition-transform duration-150 ease-out
           ${disabled ? 'opacity-50' : 'hover:scale-[1.02]'}
         `}
         style={{
-          width: 'fit-content',
-          backgroundColor: BLOCK_COLORS.tenFrame,
-          padding: '3px',
-          border: `2px solid ${BLOCK_COLORS.tenFrame}`,
-          borderRadius: '10px',
+          width: '200px',
+          height: '32px',
+          backgroundColor: BLOCK_COLORS.rod,
+          borderRadius: '6px',
+          position: 'relative',
+          boxShadow: `
+            inset 0 2px 4px ${BLOCK_COLORS.highlight},
+            inset 0 -2px 4px rgba(0, 0, 0, 0.1),
+            0 2px 4px rgba(0, 0, 0, 0.15)
+          `,
+          border: `1px solid ${BLOCK_COLORS.rodDark}`,
+          overflow: 'hidden',
         }}
         role="img"
         aria-label="Ten rod: 10 ones grouped together, value 10"
         data-block-type="ten"
         data-block-value={10}
       >
-        {/* 10 unit cubes in a row - each looks like a mini unit cube */}
-        <div className="flex gap-[3px]">
-          {segments.map((index) => (
-            <div
-              key={index}
-              className="rounded-md"
-              style={{
-                width: '28px',
-                height: '28px',
-                backgroundColor: BLOCK_COLORS.unitCube,
-                boxShadow: `
-                  inset 2px 2px 4px rgba(255, 255, 255, 0.4),
-                  inset -1px -1px 2px rgba(0, 0, 0, 0.15),
-                  0 1px 2px rgba(0, 0, 0, 0.1)
-                `,
-                border: '1px solid rgba(255, 255, 255, 0.3)',
-              }}
-              aria-hidden="true"
+        {/* Subtle segment lines - evenly spaced */}
+        <svg
+          width="100%"
+          height="100%"
+          style={{ position: 'absolute', top: 0, left: 0 }}
+          aria-hidden="true"
+        >
+          {Array.from({ length: 9 }, (_, i) => (
+            <line
+              key={i}
+              x1={`${String((i + 1) * 10)}%`}
+              y1="20%"
+              x2={`${String((i + 1) * 10)}%`}
+              y2="80%"
+              stroke={BLOCK_COLORS.rodDark}
+              strokeWidth="1"
+              strokeOpacity="0.5"
             />
           ))}
-        </div>
+        </svg>
+        {/* Value label */}
+        <span
+          className="font-bold text-white drop-shadow-sm"
+          style={{
+            fontSize: '14px',
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
+          10
+        </span>
       </div>
     </Draggable>
   );
