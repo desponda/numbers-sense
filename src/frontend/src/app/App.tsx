@@ -3,11 +3,19 @@ import { type JSX, useState, useCallback } from 'react';
 import { AppShell, Header, GameMenu, type GameType } from '../components/layout';
 import { Button } from '../components/ui';
 import { BuildTheNumberGame } from '../games/build-the-number';
+import { DivisionRaceGame } from '../games/division-race';
+import { MultiplicationRaceGame } from '../games/multiplication-race';
 import { SortTheNumbersGame } from '../games/sort-the-numbers';
 
 import type { DifficultyMode } from '../game-engine';
 
-type AppView = 'menu' | 'build-number' | 'sort-numbers' | 'difficulty-select';
+type AppView =
+  | 'menu'
+  | 'build-number'
+  | 'sort-numbers'
+  | 'multiplication-race'
+  | 'division-race'
+  | 'difficulty-select';
 
 /**
  * Difficulty option configuration
@@ -98,17 +106,35 @@ export const App = (): JSX.Element => {
         return 'Build the Number';
       case 'sort-numbers':
         return 'Sort the Numbers';
+      case 'multiplication-race':
+        return 'Multiplication Race';
+      case 'division-race':
+        return 'Division Race';
       default:
         return undefined;
+    }
+  };
+
+  // Get game title for difficulty selector
+  const getGameTitle = (): string => {
+    switch (selectedGame) {
+      case 'build-number':
+        return 'Build the Number';
+      case 'sort-numbers':
+        return 'Sort the Numbers';
+      case 'multiplication-race':
+        return 'Multiplication Race';
+      case 'division-race':
+        return 'Division Race';
+      default:
+        return 'Select a Game';
     }
   };
 
   // Render difficulty selector
   const renderDifficultySelector = (): JSX.Element => (
     <div className="flex flex-col gap-6 max-w-md mx-auto p-6">
-      <h2 className="text-2xl font-bold text-center text-text-primary">
-        {selectedGame === 'build-number' ? 'Build the Number' : 'Sort the Numbers'}
-      </h2>
+      <h2 className="text-2xl font-bold text-center text-text-primary">{getGameTitle()}</h2>
       <p className="text-center text-text-secondary">Select a difficulty level:</p>
       <div className="flex flex-col gap-4">
         {DIFFICULTY_OPTIONS.map((option) => (
@@ -146,6 +172,11 @@ export const App = (): JSX.Element => {
     </div>
   );
 
+  // Map difficulty for race games (they don't support 'challenge')
+  const getRaceDifficulty = (): 'easy' | 'medium' | 'hard' => {
+    return difficulty === 'challenge' ? 'hard' : difficulty;
+  };
+
   // Render content based on current view
   const renderContent = (): JSX.Element => {
     switch (currentView) {
@@ -155,6 +186,10 @@ export const App = (): JSX.Element => {
         return <BuildTheNumberGame difficulty={difficulty} onSessionEnd={handleGoHome} />;
       case 'sort-numbers':
         return <SortTheNumbersGame difficulty={difficulty} />;
+      case 'multiplication-race':
+        return <MultiplicationRaceGame difficulty={getRaceDifficulty()} />;
+      case 'division-race':
+        return <DivisionRaceGame difficulty={getRaceDifficulty()} />;
       default:
         return <GameMenu onSelectGame={handleSelectGame} />;
     }

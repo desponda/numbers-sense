@@ -2,7 +2,7 @@ import type { JSX } from 'react';
 
 import { Card, Icon } from '../ui';
 
-export type GameType = 'build-number' | 'sort-numbers';
+export type GameType = 'build-number' | 'sort-numbers' | 'multiplication-race' | 'division-race';
 
 export interface GameMenuProps {
   /** Handler when a game is selected */
@@ -12,12 +12,20 @@ export interface GameMenuProps {
 interface GameCardProps {
   title: string;
   description: string;
-  icon: 'blocks' | 'trophy';
+  icon?: 'blocks' | 'trophy';
+  iconText?: string;
   iconColor: string;
   onClick: () => void;
 }
 
-const GameCard = ({ title, description, icon, iconColor, onClick }: GameCardProps): JSX.Element => {
+const GameCard = ({
+  title,
+  description,
+  icon,
+  iconText,
+  iconColor,
+  onClick,
+}: GameCardProps): JSX.Element => {
   return (
     <Card
       interactive
@@ -44,7 +52,13 @@ const GameCard = ({ title, description, icon, iconColor, onClick }: GameCardProp
         "
         style={{ color: iconColor }}
       >
-        <Icon name={icon} size="xl" />
+        {iconText !== undefined && iconText !== '' ? (
+          <span className="text-3xl" aria-hidden="true">
+            {iconText}
+          </span>
+        ) : (
+          icon !== undefined && <Icon name={icon} size="xl" />
+        )}
       </div>
 
       {/* Game title */}
@@ -98,6 +112,26 @@ export const GameMenu = ({ onSelectGame }: GameMenuProps): JSX.Element => {
           iconColor="#F6C863"
           onClick={() => {
             onSelectGame('sort-numbers');
+          }}
+        />
+
+        <GameCard
+          title="Multiplication Race"
+          description="Race to master times tables!"
+          iconText="×🚴"
+          iconColor="#9B87D4"
+          onClick={() => {
+            onSelectGame('multiplication-race');
+          }}
+        />
+
+        <GameCard
+          title="Division Race"
+          description="Race to master division!"
+          iconText="÷🚴"
+          iconColor="#E89B9B"
+          onClick={() => {
+            onSelectGame('division-race');
           }}
         />
       </div>
