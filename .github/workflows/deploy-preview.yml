@@ -1,0 +1,79 @@
+name: Deploy Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    name: Deploy PR Preview
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # Placeholder for Vercel deployment
+      # Uncomment and configure when Vercel is set up
+      #
+      # - name: Deploy to Vercel
+      #   id: deploy
+      #   uses: amondnet/vercel-action@v25
+      #   with:
+      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+      #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+      #     scope: ${{ secrets.VERCEL_ORG_ID }}
+      #
+      # - name: Comment PR with preview URL
+      #   uses: actions/github-script@v7
+      #   with:
+      #     script: |
+      #       github.rest.issues.createComment({
+      #         issue_number: context.issue.number,
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         body: `## Preview Deployment
+      #
+      #         Your preview is ready!
+      #
+      #         **Preview URL:** ${{ steps.deploy.outputs.preview-url }}
+      #
+      #         This preview will be automatically updated when you push new commits.`
+      #       })
+
+      - name: Preview deployment placeholder
+        run: |
+          echo "========================================"
+          echo "  Preview Deployment Placeholder"
+          echo "========================================"
+          echo ""
+          echo "Vercel deployment is not yet configured."
+          echo "To enable preview deployments:"
+          echo ""
+          echo "1. Create a Vercel account and project"
+          echo "2. Add the following secrets to GitHub:"
+          echo "   - VERCEL_TOKEN"
+          echo "   - VERCEL_ORG_ID"
+          echo "   - VERCEL_PROJECT_ID"
+          echo "3. Uncomment the deployment steps in this workflow"
+          echo ""
+          echo "========================================"
