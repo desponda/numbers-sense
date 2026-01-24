@@ -10,6 +10,7 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragStartEvent,
   Announcements,
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
@@ -18,6 +19,7 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { generateSortTheNumbersValues } from '../../game-engine/problemGenerator';
 import { useGameSessionStore } from '../../game-engine/stores/gameSessionStore';
+import { useGameAudio } from '../../hooks/useGameAudio';
 
 import { BlockRepresentation } from './BlockRepresentation';
 import { NumberCard } from './NumberCard';
@@ -155,6 +157,9 @@ export const SortTheNumbersGame = ({
   // Game session store
   const { session, startSession, completeProblem, submitAttempt } = useGameSessionStore();
 
+  // Audio feedback
+  const { playSound } = useGameAudio();
+
   // Local game state
   const [phase, setPhase] = useState<GamePhase>('visual');
   const [items, setItems] = useState<SortItem[]>([]);
@@ -232,13 +237,25 @@ export const SortTheNumbersGame = ({
       onPhaseChange?.(newPhase);
       // Shuffle items for numeric phase so user must sort again
       if (newPhase === 'numeric') {
-        setItems((currentItems) => shuffleArray(currentItems));
-        setValidationResults(items.map(() => null));
+        setItems((currentItems) => {
+          const shuffled = shuffleArray(currentItems);
+          // Reset validation for the new shuffled items
+          setValidationResults(shuffled.map(() => null));
+          return shuffled;
+        });
         setShowSuccess(false);
         setLocalAttempts(0);
       }
     },
-    [onPhaseChange, items, shuffleArray],
+    [onPhaseChange, shuffleArray],
+  );
+
+  // Handle drag start - play pickup sound
+  const handleDragStart = useCallback(
+    (_event: DragStartEvent) => {
+      playSound('blockPickup');
+    },
+    [playSound],
   );
 
   // Handle drag end
@@ -247,16 +264,17 @@ export const SortTheNumbersGame = ({
       const { active, over } = event;
 
       if (over !== null && active.id !== over.id) {
+        playSound('blockDrop');
         setItems((currentItems) => {
           const oldIndex = currentItems.findIndex((item) => item.id === active.id);
           const newIndex = currentItems.findIndex((item) => item.id === over.id);
           return arrayMove(currentItems, oldIndex, newIndex);
         });
         // Clear validation when order changes
-        setValidationResults(items.map(() => null));
+        setValidationResults((prev) => prev.map(() => null));
       }
     },
-    [items],
+    [playSound],
   );
 
   // Validate current order
@@ -274,12 +292,14 @@ export const SortTheNumbersGame = ({
     setIsChecking(true);
     setLocalAttempts((prev) => prev + 1);
     submitAttempt();
+    playSound('buttonClick');
 
     // Delay to show animation
     setTimeout(() => {
       const isCorrect = validateOrder();
 
       if (isCorrect) {
+        playSound('correct');
         setShowSuccess(true);
         setTotalCorrect((prev) => prev + 1);
         completeProblem(true);
@@ -300,12 +320,15 @@ export const SortTheNumbersGame = ({
             generateProblem();
           }, 2000);
         }
+      } else {
+        playSound('incorrect');
       }
 
       setIsChecking(false);
     }, 300);
   }, [
     submitAttempt,
+    playSound,
     validateOrder,
     completeProblem,
     phase,
@@ -347,6 +370,7 @@ export const SortTheNumbersGame = ({
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         accessibility={{
           announcements,
