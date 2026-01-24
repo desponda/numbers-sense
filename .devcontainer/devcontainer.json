@@ -1,0 +1,94 @@
+{
+  "name": "NumberSense Development",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+      "kubectl": "latest",
+      "helm": "latest",
+      "minikube": "none"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "typescript.suggest.autoImports": true,
+        "tailwindCSS.experimental.classRegex": [
+          ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+        ],
+        "files.associations": {
+          "*.css": "tailwindcss"
+        }
+      },
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "dsznajder.es7-react-js-snippets",
+        "formulahendry.auto-rename-tag",
+        "christian-kohler.path-intellisense",
+        "mikestead.dotenv",
+        "redhat.vscode-yaml",
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "usernamehw.errorlens",
+        "streetsidesoftware.code-spell-checker",
+        "eamodio.gitlens",
+        "GitHub.copilot"
+      ]
+    },
+    "codespaces": {
+      "repositories": {
+        "desponda/homelab-k8s-infra": {
+          "permissions": {
+            "contents": "write",
+            "pull_requests": "write"
+          }
+        },
+        "desponda/*": {
+          "permissions": {
+            "contents": "read",
+            "packages": "read"
+          }
+        }
+      }
+    }
+  },
+
+  "forwardPorts": [5173, 3000, 8080],
+  "portsAttributes": {
+    "5173": {
+      "label": "Frontend Dev Server",
+      "onAutoForward": "notify"
+    },
+    "3000": {
+      "label": "Backend API",
+      "onAutoForward": "silent"
+    },
+    "8080": {
+      "label": "Docker Preview",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "postCreateCommand": "cd src/frontend && npm install && cd ../shared && npm install",
+  "postStartCommand": "echo '🎮 NumberSense Dev Environment Ready! Run: cd src/frontend && npm run dev'",
+
+  "remoteEnv": {
+    "NODE_ENV": "development"
+  },
+
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  }
+}
