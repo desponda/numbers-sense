@@ -275,8 +275,96 @@ npm run format     # Run Prettier
 
 ## Current Status
 
-See `/docs/PROJECT-STATUS.md` for current progress.
+See `/docs/PROJECT-STATUS.md` for full details.
 
-**Phase**: Sprint 1 - Core Game Implementation
-**Completed**: Research, Architecture, Sprint 0 Foundation, Game Engine Core, DnD System, Base-10 Blocks
-**Next**: Build the Number - Easy Mode Implementation
+**Phase**: MVP COMPLETE - Ready for Staging Deployment
+**Branch**: `chaoskube`
+**Total Commits**: 21
+
+---
+
+## Session Handoff (January 24, 2026)
+
+### What's Done
+
+| Component | Status | Location |
+|-----------|--------|----------|
+| Research (5 docs, 7,668 lines) | ✅ Complete | `/docs/research/`, `/docs/specs/`, `/docs/architecture/` |
+| Sprint 0 Foundation | ✅ Complete | Frontend, shared types, CI/CD, ESLint/Prettier |
+| Game Engine Core | ✅ Complete | `/src/frontend/src/game-engine/` |
+| DnD System | ✅ Complete | `/src/frontend/src/components/dnd/` |
+| Base-10 Blocks | ✅ Complete | `/src/frontend/src/components/blocks/` |
+| Build the Number (Easy) | ✅ Complete | `/src/frontend/src/games/build-the-number/` |
+| Sort the Numbers (All) | ✅ Complete | `/src/frontend/src/games/sort-the-numbers/` |
+| App Shell & Navigation | ✅ Complete | `/src/frontend/src/components/layout/` |
+| Feedback Components | ✅ Complete | `/src/frontend/src/components/feedback/` |
+| Docker + Helm | ✅ Complete | `/Dockerfile`, `/k8s/helm/numbers-sense/` |
+| CI/CD Pipeline | ✅ Complete | `/.github/workflows/` |
+| Devcontainer | ✅ Complete | `/.devcontainer/devcontainer.json` |
+
+### What's Next (Priority Order)
+
+1. **Deploy to Staging**
+   - Rebuild Codespace to get `homelab-k8s-infra` write access
+   - Push `/deploy/argocd/numbers-sense-staging.yaml` to infra repo
+   - Create `ghcr-credentials` secret in cluster
+   - Verify deployment at `numbers-sense-staging.dresponda.com`
+
+2. **Add More Difficulty Modes**
+   - Build the Number: Medium, Hard, Challenge modes
+   - Already have block components (TenRod, HundredFlat)
+   - Update game to accept difficulty prop
+
+3. **Add Tests**
+   - Set up Vitest
+   - Unit tests for game engine, problem generator
+   - Component tests for blocks, games
+   - E2E tests with Playwright
+
+4. **Backend & Persistence (v1.1)**
+   - Hono API server
+   - PostgreSQL with Drizzle ORM
+   - Progress persistence
+   - Parent accounts (deferred auth)
+
+5. **Parent Dashboard (v1.1)**
+   - View child progress
+   - Session history
+   - Skill mastery visualization
+
+### Quick Start Commands
+
+```bash
+# Development
+cd src/frontend && npm run dev
+
+# Quality checks
+npm run lint && npm run typecheck && npm run build
+
+# Docker build
+docker build -t numbers-sense:latest .
+docker run -p 8080:80 numbers-sense:latest
+```
+
+### Key Files to Know
+
+| Purpose | File |
+|---------|------|
+| Main app entry | `/src/frontend/src/app/App.tsx` |
+| Game engine state | `/src/frontend/src/game-engine/stores/gameSessionStore.ts` |
+| Problem generator | `/src/frontend/src/game-engine/problemGenerator.ts` |
+| Build the Number game | `/src/frontend/src/games/build-the-number/BuildTheNumberGame.tsx` |
+| Sort the Numbers game | `/src/frontend/src/games/sort-the-numbers/SortTheNumbersGame.tsx` |
+| Design tokens | `/src/frontend/tailwind.config.js` |
+| Helm values | `/k8s/helm/numbers-sense/values.yaml` |
+| ArgoCD manifest | `/deploy/argocd/numbers-sense-staging.yaml` |
+
+### Deferred Features
+
+- User authentication (COPPA compliance needed)
+- Backend API
+- Progress persistence across devices
+- Parent dashboard
+- Sound effects / audio
+- Animations (Framer Motion ready but not implemented)
+- Additional game modes beyond Easy
