@@ -89,26 +89,31 @@ describe('SortTheNumbersGame', () => {
   });
 
   describe('Check Order button', () => {
-    it('triggers validation when clicked', async () => {
+    it('becomes disabled when clicked to prevent multiple submissions', () => {
       render(<SortTheNumbersGame />);
 
       const checkButton = screen.getByRole('button', { name: /check order/i });
+      expect(checkButton).not.toBeDisabled();
+
       fireEvent.click(checkButton);
 
-      // Button should show loading state briefly
-      await waitFor(() => {
-        expect(checkButton).not.toBeDisabled();
-      });
+      // Should be disabled during validation
+      expect(checkButton).toBeDisabled();
     });
 
-    it('is disabled while checking', () => {
+    it('shows feedback after checking order', async () => {
       render(<SortTheNumbersGame />);
 
       const checkButton = screen.getByRole('button', { name: /check order/i });
       fireEvent.click(checkButton);
 
-      // Should be disabled during check
-      expect(checkButton).toBeDisabled();
+      // Feedback message should appear
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/great job|almost|some numbers are not/i)).toBeInTheDocument();
+        },
+        { timeout: 3000 },
+      );
     });
   });
 
