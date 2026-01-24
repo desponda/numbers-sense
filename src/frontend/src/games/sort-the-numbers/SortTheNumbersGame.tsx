@@ -210,19 +210,35 @@ export const SortTheNumbersGame = ({
     generateProblem();
   }, [difficulty, session, startSession, generateProblem]);
 
+  // Shuffle array (Fisher-Yates)
+  const shuffleArray = useCallback(<T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = shuffled[i];
+      const swapVal = shuffled[j];
+      if (temp !== undefined && swapVal !== undefined) {
+        shuffled[i] = swapVal;
+        shuffled[j] = temp;
+      }
+    }
+    return shuffled;
+  }, []);
+
   // Handle phase change
   const handlePhaseChange = useCallback(
     (newPhase: GamePhase) => {
       setPhase(newPhase);
       onPhaseChange?.(newPhase);
-      // Reset validation but KEEP the same numbers for visual-to-symbol mapping
+      // Shuffle items for numeric phase so user must sort again
       if (newPhase === 'numeric') {
+        setItems((currentItems) => shuffleArray(currentItems));
         setValidationResults(items.map(() => null));
         setShowSuccess(false);
         setLocalAttempts(0);
       }
     },
-    [onPhaseChange, items],
+    [onPhaseChange, items, shuffleArray],
   );
 
   // Handle drag end
