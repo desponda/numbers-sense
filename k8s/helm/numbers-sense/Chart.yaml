@@ -1,0 +1,6 @@
+apiVersion: v2
+name: numbers-sense
+description: A Helm chart for NumberSense application
+type: application
+version: 0.1.0
+appVersion: 0.1.0
