@@ -48,3 +48,6 @@ yarn-error.log*
 
 # Turbo
 .turbo
+image.png
+image copy.png
+*.png
