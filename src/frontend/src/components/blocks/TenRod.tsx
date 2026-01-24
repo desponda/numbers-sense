@@ -57,7 +57,7 @@ export const TenRod = ({ id, disabled = false, className = '' }: TenRodProps): J
           width: '200px',
           height: '32px',
           backgroundColor: BLOCK_COLORS.rod,
-          borderRadius: '6px',
+          borderRadius: '2px',
           position: 'relative',
           boxShadow: `
             inset 0 2px 4px ${BLOCK_COLORS.highlight},
@@ -65,14 +65,13 @@ export const TenRod = ({ id, disabled = false, className = '' }: TenRodProps): J
             0 2px 4px rgba(0, 0, 0, 0.15)
           `,
           border: `1px solid ${BLOCK_COLORS.rodDark}`,
-          overflow: 'hidden',
         }}
         role="img"
         aria-label="Ten rod: 10 ones grouped together, value 10"
         data-block-type="ten"
         data-block-value={10}
       >
-        {/* Subtle segment lines - evenly spaced */}
+        {/* Segment lines - evenly spaced */}
         <svg
           width="100%"
           height="100%"
@@ -83,9 +82,9 @@ export const TenRod = ({ id, disabled = false, className = '' }: TenRodProps): J
             <line
               key={i}
               x1={`${String((i + 1) * 10)}%`}
-              y1="20%"
+              y1="0"
               x2={`${String((i + 1) * 10)}%`}
-              y2="80%"
+              y2="100%"
               stroke={BLOCK_COLORS.rodDark}
               strokeWidth="1"
               strokeOpacity="0.5"

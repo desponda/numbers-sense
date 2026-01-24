@@ -51,14 +51,15 @@ const UnitCubeVisual = ({ scale = 1 }: { scale?: number }): JSX.Element => {
 
 /**
  * Renders a vertical ten rod (value = 10) - compact vertical bar with segment lines
+ * Flat/square ends like real base-10 rods
  */
 const TenRodVisual = ({ scale = 1 }: { scale?: number }): JSX.Element => {
   const width = 16 * scale;
-  const height = 80 * scale; // 5x height for compactness while showing value
+  const height = 80 * scale;
 
   return (
     <div
-      className="rounded-md relative"
+      className="relative"
       style={{
         width: `${String(width)}px`,
         height: `${String(height)}px`,
@@ -69,7 +70,7 @@ const TenRodVisual = ({ scale = 1 }: { scale?: number }): JSX.Element => {
           0 2px 4px rgba(0, 0, 0, 0.15)
         `,
         border: `1px solid ${BLOCK_COLORS.tenDark}`,
-        overflow: 'hidden',
+        borderRadius: '2px',
       }}
       aria-hidden="true"
     >
@@ -83,13 +84,13 @@ const TenRodVisual = ({ scale = 1 }: { scale?: number }): JSX.Element => {
         {Array.from({ length: 9 }, (_, i) => (
           <line
             key={i}
-            x1="15%"
+            x1="0"
             y1={`${String((i + 1) * 10)}%`}
-            x2="85%"
+            x2="100%"
             y2={`${String((i + 1) * 10)}%`}
             stroke={BLOCK_COLORS.tenDark}
             strokeWidth="1"
-            strokeOpacity="0.4"
+            strokeOpacity="0.5"
           />
         ))}
       </svg>
@@ -205,6 +206,16 @@ export const BlockRepresentation = ({
       role="img"
       aria-label={getAriaLabel()}
     >
+      {/* Value label above blocks */}
+      {showValue && (
+        <div
+          className="text-text-primary font-bold text-center mb-2"
+          style={{ fontSize: `${String(18 * scale)}px` }}
+        >
+          {value}
+        </div>
+      )}
+
       {/* Block visualization - horizontal row layout */}
       <div className="flex items-end gap-1" style={{ minHeight: `${String(84 * scale)}px` }}>
         {/* Hundred flats */}
@@ -236,16 +247,6 @@ export const BlockRepresentation = ({
           </div>
         )}
       </div>
-
-      {/* Optional value label */}
-      {showValue && (
-        <div
-          className="text-text-primary font-bold text-center mt-1"
-          style={{ fontSize: `${String(14 * scale)}px` }}
-        >
-          = {value}
-        </div>
-      )}
     </div>
   );
 };
