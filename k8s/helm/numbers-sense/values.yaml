@@ -5,7 +5,7 @@ image:
   pullPolicy: IfNotPresent
   tag: latest
 
-imagePullSecrets: []
+imagePullSecrets: []  # No secrets needed - image is public
 nameOverride: ""
 fullnameOverride: ""
 

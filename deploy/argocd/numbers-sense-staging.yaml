@@ -4,7 +4,7 @@
 # To deploy: Copy this file to your homelab-k8s-infra repo:
 #   applications/apps/numbers-sense-staging.yaml
 #
-# PREREQUISITE: Create ghcr-credentials secret in namespace for pulling images
+# NOTE: Container image is public (ghcr.io/desponda/numbers-sense) - no pull secrets needed
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
