@@ -3,6 +3,7 @@
 ## Overview
 
 Comprehensive test suite for Multiplication Race and Division Race games, covering:
+
 - Unit tests for utility functions
 - Component tests for UI elements
 - E2E tests for complete game flow
@@ -13,7 +14,9 @@ Comprehensive test suite for Multiplication Race and Division Race games, coveri
 ### Unit Tests (Utils)
 
 #### 1. `utils/questionGenerator.test.ts` (27 todo tests)
+
 Tests question generation for both multiplication and division:
+
 - Multiplication question format (N×M)
 - Division question format (M÷N)
 - Correct answer calculation
@@ -23,7 +26,9 @@ Tests question generation for both multiplication and division:
 - Edge cases (0, 1, division by zero)
 
 #### 2. `utils/distractorGenerator.test.ts` (17 todo tests)
+
 Tests smart distractor generation:
+
 - Exactly 3 distractors per question
 - No duplicate distractors
 - Correct answer not in distractors
@@ -33,7 +38,9 @@ Tests smart distractor generation:
 - Plausible range distractors
 
 #### 3. `utils/laneSelector.test.ts` (12 passing tests)
+
 Tests lane prioritization algorithm:
+
 - ✓ Returns -1 when all lanes finished
 - ✓ Returns -1 for empty lanes array
 - ✓ Prioritizes furthest-behind lane
@@ -46,7 +53,9 @@ Tests lane prioritization algorithm:
 - ✓ Excludes finished lanes from priority list
 
 #### 4. `utils/factMasteryTracker.test.ts` (24 todo tests)
+
 Tests mastery tracking:
+
 - Initialize 10 facts per lane
 - Record correct/incorrect answers
 - Mastery after 2 correct answers
@@ -55,7 +64,9 @@ Tests mastery tracking:
 - Lane finish detection
 
 #### 5. `utils/testUtils.ts` (Helper utilities)
+
 Mock data factories:
+
 - `mockLaneState()` - Create mock lane states
 - `mockRaceQuestion()` - Create mock questions
 - `mockFactMastery()` - Create mock mastery maps
@@ -65,7 +76,9 @@ Mock data factories:
 ### Component Tests
 
 #### 6. `components/BikeRaceLane.test.tsx` (21 todo tests)
+
 Tests lane display component:
+
 - Progress counter display (7/20)
 - Lane labels (×3 or ÷7)
 - Bike position reflects progress
@@ -75,7 +88,9 @@ Tests lane display component:
 - Accessibility labels
 
 #### 7. `components/QuestionModal.test.tsx` (27 todo tests)
+
 Tests question display modal:
+
 - Question text display
 - 4 answer options rendering
 - Click interaction
@@ -86,7 +101,9 @@ Tests question display modal:
 - Visual feedback (hover, focus)
 
 #### 8. `components/MultipleChoiceGrid.test.tsx` (20 todo tests)
+
 Tests answer grid layout:
+
 - 2×2 grid layout
 - 4 buttons rendered
 - Option values display
@@ -102,6 +119,7 @@ Tests answer grid layout:
 #### 9. `e2e/race-games.spec.ts` (50+ tests)
 
 **Multiplication Race - Medium Mode:**
+
 - Displays game title and instructions
 - Shows 10 bike lanes (×0 through ×9)
 - All lanes start at 0/20
@@ -116,10 +134,12 @@ Tests answer grid layout:
 - Pause/resume functionality
 
 **Multiplication Race - Easy Mode:**
+
 - Shows 6 lanes (×0 through ×5)
 - Only lanes 0-5 visible
 
 **Division Race - Medium Mode:**
+
 - Shows 9 lanes (÷1 through ÷9, no ÷0)
 - Question format: M ÷ N = ?
 - Only whole number division questions
@@ -127,20 +147,24 @@ Tests answer grid layout:
 - Bike advances on correct answer
 
 **Division Race - Easy Mode:**
+
 - Shows 5 lanes (÷1 through ÷5)
 
 **Accessibility:**
+
 - Screen reader can access lane info
 - Question has accessible label
 - Answer buttons have accessible names
 - Keyboard-only navigation possible
 
 **Visual Design:**
+
 - Touch targets meet 48px minimum (mobile)
 - Lanes are visually distinct
 - Active lane is highlighted
 
 **Game Flow:**
+
 - Questions change after correct answer
 - Same question after incorrect answer
 - Timer counts up
@@ -149,6 +173,7 @@ Tests answer grid layout:
 ## Test Coverage Goals
 
 ### Coverage Targets
+
 - **Utility functions:** 80%+ line coverage
 - **Components:** 70%+ coverage
 - **E2E:** All critical paths covered
@@ -172,6 +197,7 @@ npm run ci
 ## Implementation Status
 
 ### ✅ Completed
+
 - Test file structure created
 - Test utilities (mockLaneState, mockRaceQuestion, etc.)
 - Lane selector implementation and tests (12/12 passing)
@@ -182,7 +208,9 @@ npm run ci
 - E2E test structure (50+ test placeholders)
 
 ### 🔄 Pending (Waiting for Implementation)
+
 All `it.todo()` tests are placeholders that will become active once:
+
 1. Question generator is implemented
 2. Distractor generator is implemented
 3. Fact mastery tracker is implemented
@@ -194,6 +222,7 @@ All `it.todo()` tests are placeholders that will become active once:
 ## Test Patterns
 
 ### Unit Test Pattern (from existing tests)
+
 ```typescript
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
@@ -216,6 +245,7 @@ describe('componentName', () => {
 ```
 
 ### Component Test Pattern
+
 ```typescript
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -240,6 +270,7 @@ describe('ComponentName', () => {
 ```
 
 ### E2E Test Pattern
+
 ```typescript
 import { test, expect } from '@playwright/test';
 
