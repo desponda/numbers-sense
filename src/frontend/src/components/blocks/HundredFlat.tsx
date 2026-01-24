@@ -25,7 +25,7 @@ export interface HundredFlatProps {
  * HundredFlat - Hundred flat block representing the value 100.
  *
  * Design specifications:
- * - Visual size: 480x480px
+ * - Visual size: max-width 280px, responsive square (aspect-ratio 1:1)
  * - Color: #95E1D3 (Mint Green)
  * - Shows 10x10 grid pattern
  * - Draggable using @dnd-kit
@@ -65,11 +65,12 @@ export const HundredFlat = ({
           shadow-soft
           select-none
           transition-transform duration-150 ease-out
+          aspect-square
           ${disabled ? 'opacity-50' : 'hover:scale-[1.01]'}
         `}
         style={{
-          width: '480px',
-          height: '480px',
+          width: '100%',
+          maxWidth: '280px',
           backgroundColor: BLOCK_COLORS.hundred,
           padding: '8px',
         }}

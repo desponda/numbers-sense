@@ -166,10 +166,10 @@ export const SortingArea = ({
             bg-white
             rounded-xl
             shadow-soft
-            ${isHorizontal ? 'flex-row flex-wrap justify-center items-center' : 'flex-col items-center'}
+            ${isHorizontal ? 'flex-row justify-start items-center overflow-x-auto' : 'flex-col items-center'}
           `}
           role="list"
-          aria-label="Sortable numbers"
+          aria-label="Sortable numbers - drag items left to right from smallest to biggest"
         >
           {children}
         </div>

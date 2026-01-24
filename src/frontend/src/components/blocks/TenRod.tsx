@@ -25,7 +25,7 @@ export interface TenRodProps {
  * TenRod - Ten rod block representing the value 10.
  *
  * Design specifications:
- * - Visual size: 480x48px (10 unit cubes wide)
+ * - Visual size: max-width 280px, responsive (10 unit cubes wide)
  * - Color: #FF6B6B (Coral Red)
  * - Shows 10 segments to reinforce "10 ones = 1 ten"
  * - Draggable using @dnd-kit
@@ -60,7 +60,8 @@ export const TenRod = ({ id, disabled = false, className = '' }: TenRodProps): J
           ${disabled ? 'opacity-50' : 'hover:scale-[1.02]'}
         `}
         style={{
-          width: '480px',
+          width: '100%',
+          maxWidth: '280px',
           backgroundColor: BLOCK_COLORS.ten,
           padding: '4px',
         }}

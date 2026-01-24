@@ -213,12 +213,14 @@ export const SortTheNumbersGame = ({
     (newPhase: GamePhase) => {
       setPhase(newPhase);
       onPhaseChange?.(newPhase);
-      // Generate new problem for numeric phase
+      // Reset validation but KEEP the same numbers for visual-to-symbol mapping
       if (newPhase === 'numeric') {
-        generateProblem();
+        setValidationResults(items.map(() => null));
+        setShowSuccess(false);
+        setLocalAttempts(0);
       }
     },
-    [onPhaseChange, generateProblem],
+    [onPhaseChange, items],
   );
 
   // Handle drag end

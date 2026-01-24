@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type JSX } from 'react';
+import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
 
 import { BlockTray, UnitCube } from '../../components/blocks';
 import { DndProvider } from '../../components/dnd';
@@ -124,7 +124,7 @@ export const BuildTheNumberGame = ({
     message: string;
   }>({ type: null, message: '' });
   const [isAnimating, setIsAnimating] = useState(false);
-  const [blockIdCounter, setBlockIdCounter] = useState(0);
+  const blockIdCounter = useRef(0);
 
   // Initialize game session
   useEffect(() => {
@@ -145,11 +145,11 @@ export const BuildTheNumberGame = ({
   // Current target value
   const targetValue = session?.currentProblem?.targetValue ?? 0;
 
-  // Generate a new block ID
+  // Generate a new block ID (using ref to avoid stale closure issues)
   const generateBlockId = useCallback((): string => {
-    setBlockIdCounter((prev) => prev + 1);
-    return `workspace-block-${String(blockIdCounter)}`;
-  }, [blockIdCounter]);
+    blockIdCounter.current += 1;
+    return `workspace-block-${String(blockIdCounter.current)}-${String(Date.now())}`;
+  }, []);
 
   // Handle block drop from tray to workspace
   const handleDragEnd = useCallback(
@@ -315,8 +315,8 @@ export const BuildTheNumberGame = ({
 
         {/* Block tray - draggable blocks */}
         <BlockTray id="block-tray" title="Available blocks">
-          {/* For Easy Mode, only show unit cubes */}
-          {Array.from({ length: 10 }).map((_, i) => (
+          {/* Show target + 2 blocks (enough to build answer with some exploration room) */}
+          {Array.from({ length: Math.min(targetValue + 2, 12) }).map((_, i) => (
             <UnitCube
               key={`tray-unit-${String(i)}`}
               id={`tray-unit-${String(i)}`}
