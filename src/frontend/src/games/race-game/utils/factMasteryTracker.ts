@@ -78,8 +78,8 @@ function getLanesForDifficulty(gameType: GameType, difficulty: Difficulty): numb
 export function initializeFactMastery(
   gameType: GameType,
   difficulty: Difficulty,
-): Map<string, FactMastery> {
-  const masteryMap = new Map<string, FactMastery>();
+): Record<string, FactMastery> {
+  const masteryMap: Record<string, FactMastery> = {};
 
   // Determine which lanes to include based on game type and difficulty
   const lanes = getLanesForDifficulty(gameType, difficulty);
@@ -90,11 +90,11 @@ export function initializeFactMastery(
 
     // Initialize mastery tracking for each fact
     facts.forEach((fact) => {
-      masteryMap.set(fact, {
+      masteryMap[fact] = {
         fact,
         correctCount: 0,
         mastered: false,
-      });
+      };
     });
   });
 
@@ -106,27 +106,28 @@ export function initializeFactMastery(
  */
 export function getUnmasteredFacts(
   lane: number,
-  masteryMap: Map<string, FactMastery>,
+  masteryMap: Record<string, FactMastery>,
   gameType: GameType,
 ): string[] {
   const allFacts = generateLaneFacts(gameType, lane);
 
   return allFacts.filter((fact) => {
-    const mastery = masteryMap.get(fact);
+    const mastery = masteryMap[fact];
     return mastery && !mastery.mastered;
   });
 }
 
 /**
  * Mark a fact as correctly answered
+ * Mutates the masteryMap parameter
  * Returns true if the fact is now mastered
  */
 export function markFactCorrect(
   fact: string,
-  masteryMap: Map<string, FactMastery>,
+  masteryMap: Record<string, FactMastery>,
   difficulty: Difficulty,
 ): boolean {
-  const mastery = masteryMap.get(fact);
+  const mastery = masteryMap[fact];
 
   if (!mastery) {
     console.warn(`Fact ${fact} not found in mastery map`);
@@ -134,15 +135,17 @@ export function markFactCorrect(
   }
 
   const required = getRepetitionsRequired(difficulty);
-  mastery.correctCount += 1;
+  const newCorrectCount = mastery.correctCount + 1;
+  const newMastered = newCorrectCount >= required;
 
-  if (mastery.correctCount >= required) {
-    mastery.mastered = true;
-  }
+  // eslint-disable-next-line no-param-reassign
+  masteryMap[fact] = {
+    ...mastery,
+    correctCount: newCorrectCount,
+    mastered: newMastered,
+  };
 
-  masteryMap.set(fact, mastery);
-
-  return mastery.mastered;
+  return newMastered;
 }
 
 /**
@@ -150,13 +153,13 @@ export function markFactCorrect(
  */
 export function isLaneComplete(
   lane: number,
-  masteryMap: Map<string, FactMastery>,
+  masteryMap: Record<string, FactMastery>,
   gameType: GameType,
 ): boolean {
   const allFacts = generateLaneFacts(gameType, lane);
 
   return allFacts.every((fact) => {
-    const mastery = masteryMap.get(fact);
+    const mastery = masteryMap[fact];
     return mastery?.mastered === true;
   });
 }
@@ -167,7 +170,7 @@ export function isLaneComplete(
  */
 export function getLaneStepsCompleted(
   lane: number,
-  masteryMap: Map<string, FactMastery>,
+  masteryMap: Record<string, FactMastery>,
   gameType: GameType,
 ): number {
   const allFacts = generateLaneFacts(gameType, lane);
@@ -175,7 +178,7 @@ export function getLaneStepsCompleted(
   let totalSteps = 0;
 
   allFacts.forEach((fact) => {
-    const mastery = masteryMap.get(fact);
+    const mastery = masteryMap[fact];
     if (mastery) {
       totalSteps += mastery.correctCount;
     }

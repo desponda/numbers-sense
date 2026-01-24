@@ -17,65 +17,14 @@ import {
   type LaneState,
   type RaceQuestion,
 } from '../types';
-
-// Placeholder imports for utils that will be created by another agent
-// These functions will be implemented in separate files
-// Once created, replace the placeholder implementations below with:
-// These will be imported once the util files are created:
-// import { initializeFactMastery, getUnmasteredFacts, markFactCorrect } from '../utils/factMasteryTracker';
-// import { generateRaceQuestion } from '../utils/questionGenerator';
-// import { selectNextLane } from '../utils/laneSelector';
-
-// Temporary placeholder implementations (will be replaced with real imports)
-/* eslint-disable @typescript-eslint/no-unused-vars */
-const initializeFactMastery = (
-  _gameType: GameType,
-  _difficulty: Difficulty,
-): Map<string, FactMastery> => {
-  // Placeholder - will be implemented by utils agent
-  return new Map();
-};
-
-const getUnmasteredFacts = (
-  _factMastery: Map<string, FactMastery>,
-  _lane: number,
-  _gameType: GameType,
-): string[] => {
-  // Placeholder - will be implemented by utils agent
-  return [];
-};
-
-const markFactCorrect = (
-  factMastery: Map<string, FactMastery>,
-  _fact: string,
-  _masteryThreshold: number,
-): Map<string, FactMastery> => {
-  // Placeholder - will be implemented by utils agent
-  return new Map(factMastery);
-};
-
-const generateRaceQuestion = (
-  _gameType: GameType,
-  lane: number,
-  _unmasteredFacts: string[],
-  _difficulty: Difficulty,
-): RaceQuestion => {
-  // Placeholder - will be implemented by utils agent
-  return {
-    lane,
-    questionText: '',
-    correctAnswer: 0,
-    options: [0, 0, 0, 0],
-    correctIndex: 0,
-    fact: '',
-  };
-};
-
-const selectNextLane = (_lanes: LaneState[]): number => {
-  // Placeholder - will be implemented by utils agent
-  return 0;
-};
-/* eslint-enable @typescript-eslint/no-unused-vars */
+// Import utility functions
+import {
+  getUnmasteredFacts,
+  initializeFactMastery,
+  markFactCorrect as markFactCorrectUtil,
+} from '../utils/factMasteryTracker';
+import { selectNextLane } from '../utils/laneSelector';
+import { generateRaceQuestion } from '../utils/questionGenerator';
 
 /**
  * Initialize lanes based on game type and difficulty
@@ -128,7 +77,7 @@ interface RaceGameState {
   endTime: number | null;
 
   // Fact mastery
-  factMastery: Map<string, FactMastery>;
+  factMastery: Record<string, FactMastery>;
 
   // Status
   status: GameStatus;
@@ -155,7 +104,7 @@ const initialState = {
   totalAttempts: 0,
   startTime: 0,
   endTime: null,
-  factMastery: new Map<string, FactMastery>(),
+  factMastery: {},
   status: 'init' as GameStatus,
 };
 
@@ -194,7 +143,7 @@ export const useRaceGameStore = create<RaceGameState>()(
        */
       generateNextQuestion: (): void => {
         const state = get();
-        const { lanes, gameType, difficulty, factMastery } = state;
+        const { lanes, gameType, factMastery } = state;
 
         // Select next lane to practice
         const nextLane = selectNextLane(lanes);
@@ -211,10 +160,10 @@ export const useRaceGameStore = create<RaceGameState>()(
         }
 
         // Get unmastered facts for this lane
-        const unmasteredFacts = getUnmasteredFacts(factMastery, nextLane, gameType);
+        const unmasteredFacts = getUnmasteredFacts(nextLane, factMastery, gameType);
 
         // Generate question for this lane
-        const question = generateRaceQuestion(gameType, nextLane, unmasteredFacts, difficulty);
+        const question = generateRaceQuestion(gameType, nextLane, unmasteredFacts);
 
         set({
           currentQuestion: question,
@@ -234,16 +183,12 @@ export const useRaceGameStore = create<RaceGameState>()(
           return;
         }
 
-        const config = DIFFICULTY_CONFIGS[difficulty];
         const isCorrect = selectedIndex === currentQuestion.correctIndex;
 
         if (isCorrect) {
-          // Mark fact as correct in mastery tracker
-          const updatedFactMastery = markFactCorrect(
-            factMastery,
-            currentQuestion.fact,
-            config.masteryThreshold,
-          );
+          // Mark fact as correct in mastery tracker (create copy to avoid mutation)
+          const updatedFactMastery = { ...factMastery };
+          markFactCorrectUtil(currentQuestion.fact, updatedFactMastery, difficulty);
 
           // Advance lane progress
           const laneIndex = lanes.findIndex((l) => l.laneNumber === currentQuestion.lane);

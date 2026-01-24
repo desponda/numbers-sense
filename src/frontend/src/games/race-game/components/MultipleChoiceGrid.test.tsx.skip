@@ -1,0 +1,371 @@
+/**
+ * Component tests for MultipleChoiceGrid
+ * Tests answer option grid layout and interaction
+ */
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+import { MultipleChoiceGrid } from './MultipleChoiceGrid.js';
+
+describe('MultipleChoiceGrid', () => {
+  const mockOnSelect = vi.fn();
+  const defaultProps = {
+    options: [48, 56, 63, 49],
+    selectedIndex: null as number | null,
+    onSelect: mockOnSelect,
+    disabled: false,
+  };
+
+  beforeEach(() => {
+    mockOnSelect.mockClear();
+  });
+
+  describe('Rendering', () => {
+    it('renders 4 buttons', () => {
+      render(<MultipleChoiceGrid {...defaultProps} />);
+      const buttons = screen.getAllByRole('radio');
+      expect(buttons).toHaveLength(4);
+    });
+
+    it('displays all option values', () => {
+      render(<MultipleChoiceGrid {...defaultProps} />);
+      defaultProps.options.forEach((option) => {
+        expect(screen.getByText(String(option))).toBeInTheDocument();
+      });
+    });
+
+    it('renders in 2x2 grid layout', () => {
+      const { container } = render(<MultipleChoiceGrid {...defaultProps} />);
+      const grid = container.firstChild;
+      expect(grid).toHaveClass('grid');
+      expect(grid).toHaveClass('grid-cols-2');
+    });
+
+    it('maintains option order', () => {
+      render(<MultipleChoiceGrid {...defaultProps} />);
+      const buttons = screen.getAllByRole('radio');
+      expect(buttons[0]).toHaveTextContent('48');
+      expect(buttons[1]).toHaveTextContent('56');
+      expect(buttons[2]).toHaveTextContent('63');
+      expect(buttons[3]).toHaveTextContent('49');
+    });
+  });
+
+  describe('User Interaction', () => {
+    it('calls onSelect when button clicked', async () => {
+      const user = userEvent.setup();
+      render(<MultipleChoiceGrid {...defaultProps} />);
+
+      const button = screen.getByText('56');
+      await user.click(button);
+
+      expect(mockOnSelect).toHaveBeenCalledTimes(1);
+    });
+
+    it('passes correct index to onSelect', async () => {
+      const user = userEvent.setup();
+      render(<MultipleChoiceGrid {...defaultProps} />);
+
+      const button = screen.getByText('48');
+      await user.click(button);
+
+      expect(mockOnSelect).toHaveBeenCalledWith(0);
+    });
+
+    it('works with different option values', async () => {
+      const user = userEvent.setup();
+      render(
+        <MultipleChoiceGrid
+          options={[0, 5, 10, 15]}
+          selectedIndex={null}
+          onSelect={mockOnSelect}
+          disabled={false}
+        />,
+      );
+
+      await user.click(screen.getByText('10'));
+      expect(mockOnSelect).toHaveBeenCalledWith(2);
+    });
+  });
+
+  describe('Disabled State', () => {
+    it('disables all buttons when disabled=true', () => {
+      render(<MultipleChoiceGrid {...defaultProps} disabled />);
+
+      const buttons = screen.getAllByRole('radio');
+      buttons.forEach((button) => {
+        expect(button).toBeDisabled();
+      });
+    });
+
+    it('does not call onSelect when disabled', async () => {
+      const user = userEvent.setup();
+      render(<MultipleChoiceGrid {...defaultProps} disabled />);
+
+      const button = screen.getByText('56');
+      await user.click(button);
+
+      expect(mockOnSelect).not.toHaveBeenCalled();
+    });
+
+    it('buttons are enabled when disabled=false', () => {
+      render(<MultipleChoiceGrid {...defaultProps} disabled={false} />);
+
+      const buttons = screen.getAllByRole('radio');
+      buttons.forEach((button) => {
+        expect(button).not.toBeDisabled();
+      });
+    });
+
+    it('applies disabled styling', () => {
+      render(<MultipleChoiceGrid {...defaultProps} disabled />);
+
+      const buttons = screen.getAllByRole('radio');
+      buttons.forEach((button) => {
+        expect(button).toHaveClass('opacity-50');
+      });
+    });
+  });
+
+  describe('Touch Targets', () => {
+    it('buttons have minimum width of 120px', () => {
+      render(<MultipleChoiceGrid {...defaultProps} />);
+      const buttons = screen.getAllByRole('radio');
+
+      buttons.forEach((button) => {
+        expect(button).toHaveClass('min-w-[120px]');
+      });
+    });
+
+    it('has adequate spacing between buttons', () => {
+      const { container } = render(<MultipleChoiceGrid {...defaultProps} />);
+      const grid = container.firstChild;
+      expect(grid).toHaveClass('gap-4');
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('all buttons are keyboard accessible', async () => {
+      const user = userEvent.setup();
+      render(<MultipleChoiceGrid {...defaultProps} />);
+
+      // Tab through all buttons
+      await user.tab();
+      expect(screen.getByText('48')).toHaveFocus();
+
+      await user.tab();
+      expect(screen.getByText('56')).toHaveFocus();
+    });
+
+    it('Enter key selects option', async () => {
+      const user = userEvent.setup();
+      render(<MultipleChoiceGrid {...defaultProps} />);
+
+      const button = screen.getByText('56');
+      button.focus();
+      await user.keyboard('{Enter}');
+
+      expect(mockOnSelect).toHaveBeenCalledWith(1);
+    });
+
+    it('Space key selects option', async () => {
+      const user = userEvent.setup();
+      render(<MultipleChoiceGrid {...defaultProps} />);
+
+      const button = screen.getByText('56');
+      button.focus();
+      await user.keyboard(' ');
+
+      expect(mockOnSelect).toHaveBeenCalledWith(1);
+    });
+
+    it('buttons have accessible names with context', () => {
+      render(<MultipleChoiceGrid {...defaultProps} />);
+
+      const buttons = screen.getAllByRole('radio');
+      expect(buttons[0]).toHaveAccessibleName('Option A: 48');
+      expect(buttons[1]).toHaveAccessibleName('Option B: 56');
+      expect(buttons[2]).toHaveAccessibleName('Option C: 63');
+      expect(buttons[3]).toHaveAccessibleName('Option D: 49');
+    });
+
+    it('buttons have aria-label with context', () => {
+      render(<MultipleChoiceGrid {...defaultProps} />);
+
+      expect(screen.getByLabelText('Option A: 48')).toBeInTheDocument();
+      expect(screen.getByLabelText('Option B: 56')).toBeInTheDocument();
+      expect(screen.getByLabelText('Option C: 63')).toBeInTheDocument();
+      expect(screen.getByLabelText('Option D: 49')).toBeInTheDocument();
+    });
+  });
+
+  describe('Visual Styling', () => {
+    it('selected button shows primary variant styling', () => {
+      render(<MultipleChoiceGrid {...defaultProps} selectedIndex={1} />);
+
+      const selectedButton = screen.getByText('56');
+      const classes = selectedButton.className;
+      expect(classes).toContain('bg-primary');
+    });
+
+    it('unselected buttons show secondary variant styling', () => {
+      render(<MultipleChoiceGrid {...defaultProps} selectedIndex={1} />);
+
+      const unselectedButton = screen.getByText('48');
+      const classes = unselectedButton.className;
+      expect(classes).toContain('bg-secondary');
+    });
+
+    it('selected button has focus ring styling', () => {
+      render(<MultipleChoiceGrid {...defaultProps} selectedIndex={1} />);
+
+      const selectedButton = screen.getByText('56');
+      expect(selectedButton).toHaveClass('ring-2');
+      expect(selectedButton).toHaveClass('ring-primary');
+    });
+
+    it('buttons have large text size', () => {
+      render(<MultipleChoiceGrid {...defaultProps} />);
+
+      const buttons = screen.getAllByRole('radio');
+      buttons.forEach((button) => {
+        expect(button).toHaveClass('text-2xl');
+        expect(button).toHaveClass('font-bold');
+      });
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('handles single digit values', () => {
+      render(
+        <MultipleChoiceGrid
+          options={[0, 1, 2, 3]}
+          selectedIndex={null}
+          onSelect={mockOnSelect}
+          disabled={false}
+        />,
+      );
+
+      expect(screen.getByText('0')).toBeInTheDocument();
+    });
+
+    it('handles three digit values', () => {
+      render(
+        <MultipleChoiceGrid
+          options={[100, 99, 98, 97]}
+          selectedIndex={null}
+          onSelect={mockOnSelect}
+          disabled={false}
+        />,
+      );
+
+      expect(screen.getByText('100')).toBeInTheDocument();
+    });
+
+    it('handles duplicate values gracefully', () => {
+      // Should not happen in practice, but component should handle it
+      render(
+        <MultipleChoiceGrid
+          options={[5, 5, 10, 10]}
+          selectedIndex={null}
+          onSelect={mockOnSelect}
+          disabled={false}
+        />,
+      );
+
+      const buttons = screen.getAllByRole('radio');
+      expect(buttons).toHaveLength(4);
+    });
+
+    it('handles rapid clicks', async () => {
+      const user = userEvent.setup();
+      render(<MultipleChoiceGrid {...defaultProps} />);
+
+      const button = screen.getByText('56');
+      await user.click(button);
+      await user.click(button);
+      await user.click(button);
+
+      // Each click should register
+      expect(mockOnSelect).toHaveBeenCalledTimes(3);
+    });
+
+    it('works with negative numbers', () => {
+      render(
+        <MultipleChoiceGrid
+          options={[-5, -3, 0, 2]}
+          selectedIndex={null}
+          onSelect={mockOnSelect}
+          disabled={false}
+        />,
+      );
+
+      expect(screen.getByText('-5')).toBeInTheDocument();
+    });
+  });
+
+  describe('Responsive Design', () => {
+    it('maintains 2x2 grid layout', () => {
+      const { container } = render(<MultipleChoiceGrid {...defaultProps} />);
+
+      const grid = container.firstChild;
+      expect(grid).toHaveClass('grid-cols-2');
+    });
+
+    it('buttons have large touch target class', () => {
+      render(<MultipleChoiceGrid {...defaultProps} />);
+
+      const buttons = screen.getAllByRole('radio');
+      buttons.forEach((button) => {
+        expect(button).toHaveClass('min-h-touch-lg');
+      });
+    });
+  });
+
+  describe('Selected State Feedback', () => {
+    it('shows no selection when selectedIndex is null', () => {
+      render(<MultipleChoiceGrid {...defaultProps} selectedIndex={null} />);
+
+      const buttons = screen.getAllByRole('radio');
+      buttons.forEach((button) => {
+        const classes = button.className;
+        expect(classes).toContain('bg-secondary');
+        expect(button).not.toHaveClass('ring-2');
+      });
+    });
+
+    it('highlights selected button', () => {
+      render(<MultipleChoiceGrid {...defaultProps} selectedIndex={2} />);
+
+      const selectedButton = screen.getByText('63');
+      const classes = selectedButton.className;
+      expect(classes).toContain('bg-primary');
+      expect(selectedButton).toHaveClass('ring-2');
+    });
+
+    it('updates aria-checked for selected button', () => {
+      render(<MultipleChoiceGrid {...defaultProps} selectedIndex={1} />);
+
+      const buttons = screen.getAllByRole('radio');
+      expect(buttons[0]).toHaveAttribute('aria-checked', 'false');
+      expect(buttons[1]).toHaveAttribute('aria-checked', 'true');
+      expect(buttons[2]).toHaveAttribute('aria-checked', 'false');
+      expect(buttons[3]).toHaveAttribute('aria-checked', 'false');
+    });
+
+    it('has radiogroup role for accessibility', () => {
+      render(<MultipleChoiceGrid {...defaultProps} />);
+
+      const radiogroup = screen.getByRole('radiogroup');
+      expect(radiogroup).toHaveAttribute('aria-label', 'Answer options');
+    });
+
+    it('all buttons have radio role', () => {
+      render(<MultipleChoiceGrid {...defaultProps} />);
+
+      const radios = screen.getAllByRole('radio');
+      expect(radios).toHaveLength(4);
+    });
+  });
+});

@@ -42,6 +42,8 @@ test.describe('Sort the Numbers Game', () => {
     await page.goto('/');
     await page.getByRole('button', { name: /sort the numbers/i }).click();
     await page.getByRole('button', { name: /easy/i }).click();
+    // Wait for game to initialize by checking for the check order button
+    await page.getByRole('button', { name: /check order/i }).waitFor();
   });
 
   test('displays sorting instructions', async ({ page }) => {

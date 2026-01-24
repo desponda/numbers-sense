@@ -1,0 +1,290 @@
+/**
+ * Component tests for QuestionModal
+ * Tests question display and answer selection interface
+ */
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+import { QuestionModal } from './QuestionModal.js';
+
+import type { RaceQuestion } from '../types';
+
+describe('QuestionModal', () => {
+  const mockOnAnswer = vi.fn();
+  const defaultQuestion: RaceQuestion = {
+    lane: 7,
+    questionText: '7 × 8 = ?',
+    correctAnswer: 56,
+    options: [48, 56, 63, 49],
+    correctIndex: 1,
+    fact: '7×8',
+  };
+
+  beforeEach(() => {
+    mockOnAnswer.mockClear();
+  });
+
+  describe('Question Display', () => {
+    it('displays question text', () => {
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+      expect(screen.getByText('7 × 8 = ?')).toBeInTheDocument();
+    });
+
+    it('displays multiplication question format', () => {
+      const multiplicationQuestion: RaceQuestion = {
+        lane: 3,
+        questionText: '3 × 9 = ?',
+        correctAnswer: 27,
+        options: [27, 24, 30, 18],
+        correctIndex: 0,
+        fact: '3×9',
+      };
+      render(<QuestionModal question={multiplicationQuestion} onAnswer={mockOnAnswer} />);
+      expect(screen.getByText('3 × 9 = ?')).toBeInTheDocument();
+    });
+
+    it('displays division question format', () => {
+      const divisionQuestion: RaceQuestion = {
+        lane: 7,
+        questionText: '21 ÷ 7 = ?',
+        correctAnswer: 3,
+        options: [3, 2, 4, 7],
+        correctIndex: 0,
+        fact: '21÷7',
+      };
+      render(<QuestionModal question={divisionQuestion} onAnswer={mockOnAnswer} />);
+      expect(screen.getByText('21 ÷ 7 = ?')).toBeInTheDocument();
+    });
+  });
+
+  describe('Answer Options', () => {
+    it('renders exactly 4 answer options', () => {
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+      const buttons = screen.getAllByRole('radio');
+      expect(buttons).toHaveLength(4);
+    });
+
+    it('displays all option values correctly', () => {
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+      defaultQuestion.options.forEach((option) => {
+        expect(screen.getByText(String(option))).toBeInTheDocument();
+      });
+    });
+
+    it('options are clickable buttons', () => {
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+      const buttons = screen.getAllByRole('radio');
+      buttons.forEach((button) => {
+        expect(button.tagName).toBe('BUTTON');
+      });
+    });
+
+    it('options arranged in 2x2 grid', () => {
+      const { container } = render(
+        <QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />,
+      );
+      const gridContainer = container.querySelector('[role="radiogroup"]');
+      expect(gridContainer).toHaveClass('grid-cols-2');
+    });
+  });
+
+  describe('User Interaction', () => {
+    it('calls onAnswer when option clicked', async () => {
+      const user = userEvent.setup();
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+
+      const option = screen.getByText('56');
+      await user.click(option);
+
+      expect(mockOnAnswer).toHaveBeenCalledTimes(1);
+    });
+
+    it('passes selected index to onAnswer', async () => {
+      const user = userEvent.setup();
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+
+      const option = screen.getByText('48'); // First option, index 0
+      await user.click(option);
+
+      expect(mockOnAnswer).toHaveBeenCalledWith(0);
+    });
+
+    it('passes correct index when correct option clicked', async () => {
+      const user = userEvent.setup();
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+
+      const correctOption = screen.getByText('56'); // correctIndex = 1
+      await user.click(correctOption);
+
+      expect(mockOnAnswer).toHaveBeenCalledWith(1);
+    });
+
+    it('passes incorrect index when wrong option clicked', async () => {
+      const user = userEvent.setup();
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+
+      const wrongOption = screen.getByText('48'); // index 0
+      await user.click(wrongOption);
+
+      expect(mockOnAnswer).toHaveBeenCalledWith(0);
+    });
+  });
+
+  describe('Disabled State', () => {
+    it('disables all options when disabled=true', () => {
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} disabled />);
+
+      const buttons = screen.getAllByRole('radio');
+      buttons.forEach((button) => {
+        expect(button).toBeDisabled();
+      });
+    });
+
+    it('does not call onAnswer when disabled', async () => {
+      const user = userEvent.setup();
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} disabled />);
+
+      const option = screen.getByText('56');
+      await user.click(option);
+
+      expect(mockOnAnswer).not.toHaveBeenCalled();
+    });
+
+    it('options are enabled when disabled=false', () => {
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} disabled={false} />);
+
+      const buttons = screen.getAllByRole('radio');
+      buttons.forEach((button) => {
+        expect(button).not.toBeDisabled();
+      });
+    });
+  });
+
+  describe('Touch Targets', () => {
+    it('buttons meet minimum touch target size (48px)', () => {
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+      const buttons = screen.getAllByRole('radio');
+
+      buttons.forEach((button) => {
+        expect(button.className).toContain('min-h-touch-lg');
+      });
+    });
+
+    it('buttons have adequate spacing', () => {
+      const { container } = render(
+        <QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />,
+      );
+      const grid = container.querySelector('[role="radiogroup"]');
+      expect(grid).toHaveClass('gap-4');
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('modal has accessible role', () => {
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+
+    it('question has accessible label', () => {
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+      const dialog = screen.getByRole('dialog');
+      expect(dialog).toHaveAttribute('aria-labelledby', 'question-text');
+    });
+
+    it('options have clear labels', () => {
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+      const buttons = screen.getAllByRole('radio');
+      // Second button is "56" with label "Option B: 56"
+      expect(buttons[1]).toHaveAccessibleName(/Option B: 56/i);
+    });
+
+    it('screen reader announces question', () => {
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+      const question = screen.getByText('7 × 8 = ?');
+      expect(question).toHaveAttribute('id', 'question-text');
+    });
+
+    it('keyboard navigation works (Tab)', async () => {
+      const user = userEvent.setup();
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+
+      const buttons = screen.getAllByRole('radio');
+      // First button is auto-focused when modal opens
+      expect(buttons[0]).toHaveFocus();
+
+      // Tab to second button
+      await user.tab();
+      expect(buttons[1]).toHaveFocus();
+    });
+
+    it('keyboard selection works (Enter/Space)', async () => {
+      const user = userEvent.setup();
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+
+      const option = screen.getByText('56');
+      option.focus();
+      await user.keyboard('{Enter}');
+
+      expect(mockOnAnswer).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe('Visual Feedback', () => {
+    it('buttons have hover state', () => {
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+      const button = screen.getByText('56');
+      // Button component has hover classes
+      expect(button.className).toContain('hover:');
+    });
+
+    it('buttons have focus ring', () => {
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+      const button = screen.getByText('56');
+      button.focus();
+      // Button component has focus-visible ring
+      expect(button.className).toContain('focus-visible:');
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('handles single digit options', () => {
+      const singleDigitQuestion: RaceQuestion = {
+        lane: 0,
+        questionText: '0 × 5 = ?',
+        correctAnswer: 0,
+        options: [0, 5, 1, 10],
+        correctIndex: 0,
+        fact: '0×5',
+      };
+      render(<QuestionModal question={singleDigitQuestion} onAnswer={mockOnAnswer} />);
+      expect(screen.getByText('0')).toBeInTheDocument();
+    });
+
+    it('handles three digit options', () => {
+      const threeDigitQuestion: RaceQuestion = {
+        lane: 10,
+        questionText: 'What is larger?',
+        correctAnswer: 100,
+        options: [100, 99, 98, 97],
+        correctIndex: 0,
+        fact: 'comparison',
+      };
+      render(<QuestionModal question={threeDigitQuestion} onAnswer={mockOnAnswer} />);
+      expect(screen.getByText('100')).toBeInTheDocument();
+    });
+
+    it('handles rapid clicks gracefully', async () => {
+      const user = userEvent.setup();
+      render(<QuestionModal question={defaultQuestion} onAnswer={mockOnAnswer} />);
+
+      const option = screen.getByText('56');
+      await user.click(option);
+      await user.click(option);
+      await user.click(option);
+
+      // All clicks should register (component doesn't prevent rapid clicks)
+      expect(mockOnAnswer).toHaveBeenCalledTimes(3);
+    });
+  });
+});

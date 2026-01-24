@@ -160,8 +160,8 @@ export const RaceGame = ({
             totalAttempts: store.totalAttempts,
             accuracy: store.totalCorrect / store.totalAttempts,
             timeElapsed: store.endTime - store.startTime,
-            factsMastered: Array.from(store.factMastery.values()).filter((f) => f.mastered).length,
-            totalFacts: store.factMastery.size,
+            factsMastered: Object.values(store.factMastery).filter((f) => f.mastered).length,
+            totalFacts: Object.keys(store.factMastery).length,
           }}
           onPlayAgain={() => {
             store.resetGame();
