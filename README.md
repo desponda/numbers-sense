@@ -19,10 +19,13 @@ Arrange numbers by magnitude, progressing from visual representations to numeric
 
 ## Tech Stack
 
-- React + TypeScript
-- Vite
-- Tailwind CSS
-- Vitest
+- **Frontend:** React 18 + TypeScript 5.6
+- **Build:** Vite 5.x
+- **Styling:** Tailwind CSS
+- **State:** Zustand
+- **DnD:** @dnd-kit
+- **Testing:** Vitest + React Testing Library (149 tests)
+- **Deploy:** Docker + Kubernetes/Helm
 
 ## Getting Started
 
@@ -32,13 +35,27 @@ npm install
 npm run dev
 ```
 
+Open http://localhost:5173 to view the app.
+
+### Running Tests
+
+```bash
+npm run test        # Run all tests
+npm run test:watch  # Watch mode
+npm run test:ui     # Vitest UI
+```
+
 ## Development
 
 | Command | Description |
 |---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production build |
 | `npm run lint` | Run ESLint |
 | `npm run typecheck` | TypeScript check |
-| `npm run build` | Production build |
+| `npm run test` | Run test suite (149 tests) |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Run tests with coverage |
 
 ## Project Structure
 

@@ -89,7 +89,7 @@ A playful, modern, clean, joyful math app that builds number sense (not memoriza
 | Backend | Hono + Node.js 20 | Serverless-ready, fast |
 | Database | PostgreSQL (Vercel) | Relational, ACID compliant |
 | ORM | Drizzle | Type-safe, bundle-efficient |
-| Testing | Vitest + Playwright | Fast, Vite-native |
+| Testing | Vitest + React Testing Library | Fast, Vite-native, 149 tests |
 | Hosting | Vercel | Serverless, global CDN |
 
 ---
@@ -181,11 +181,12 @@ See `/docs/SPRINT-PLAN.md` for detailed breakdown.
 - [x] Docker containerization
 - [x] Kubernetes/Helm deployment
 - [x] CI/CD pipeline (GitHub Actions)
+- [x] Comprehensive test suite (149 tests)
+- [x] Audio feedback system
 - [ ] Backend API (deferred)
 - [ ] Authentication system (deferred)
 - [ ] Parent dashboard (deferred)
 - [ ] Progress persistence (deferred)
-- [ ] Comprehensive tests (partial)
 
 ### Release Phase (Pending)
 - [ ] Production deployment
@@ -218,3 +219,6 @@ See `/docs/SPRINT-PLAN.md` for detailed breakdown.
 | 2026-01-24 | Research phase completed. All 5 documents (7,668 lines) delivered. |
 | 2026-01-24 | Sprint plan created. Ready for implementation. |
 | 2026-01-24 | Sprint 0 completed. Foundation built: Frontend, Shared Types, CI/CD, ESLint/Prettier, Tailwind CSS, Base UI Components. |
+| 2026-01-24 | MVP complete. Both games playable, Docker/K8s deployment, staging live. |
+| 2026-01-24 | Test suite added. 149 tests across 8 files: problemGenerator (19), gameSessionStore (27), useGameAudio (8), Button (25), Card (27), blocks (16), SortTheNumbersGame (17), BuildTheNumberGame (10). |
+| 2026-01-24 | Audio feedback implemented. Synthesized sounds for all game interactions. |
