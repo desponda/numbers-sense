@@ -26,18 +26,14 @@ service:
 
 ingress:
   enabled: true
-  className: nginx
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+  className: cloudflare-tunnel
+  annotations: {}
   hosts:
     - host: numbers-sense.example.com
       paths:
         - path: /
           pathType: Prefix
-  tls:
-    - secretName: numbers-sense-tls
-      hosts:
-        - numbers-sense.example.com
+  tls: []  # Cloudflare handles SSL termination
 
 resources:
   limits:
