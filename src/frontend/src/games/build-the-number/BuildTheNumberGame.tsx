@@ -314,7 +314,7 @@ export const BuildTheNumberGame = ({
         />
 
         {/* Block tray - draggable blocks */}
-        <BlockTray id="block-tray" title="Drag blocks here">
+        <BlockTray id="block-tray" title="Available blocks">
           {/* For Easy Mode, only show unit cubes */}
           {Array.from({ length: 10 }).map((_, i) => (
             <UnitCube
