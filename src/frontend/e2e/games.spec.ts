@@ -12,16 +12,12 @@ test.describe('Build the Number Game', () => {
     await expect(page.locator('[aria-label^="Target number:"]')).toBeVisible();
 
     // Should show block tray with unit cubes
-    await expect(
-      page.getByRole('region', { name: /block tray - drag blocks/i }),
-    ).toBeVisible();
+    await expect(page.getByRole('region', { name: /block tray - drag blocks/i })).toBeVisible();
   });
 
   test('displays workspace for dropping blocks', async ({ page }) => {
     // Workspace element should exist in DOM
-    await expect(
-      page.locator('[aria-label*="Workspace with"]'),
-    ).toHaveCount(1);
+    await expect(page.locator('[aria-label*="Workspace with"]')).toHaveCount(1);
   });
 
   test('shows game controls', async ({ page }) => {
@@ -82,9 +78,9 @@ test.describe('Sort the Numbers Game', () => {
     await page.getByRole('button', { name: /check order/i }).click();
 
     // Should show some feedback (correct or incorrect)
-    await expect(
-      page.getByText(/great job|almost|some numbers are not/i),
-    ).toBeVisible({ timeout: 3000 });
+    await expect(page.getByText(/great job|almost|some numbers are not/i)).toBeVisible({
+      timeout: 3000,
+    });
   });
 
   test('shows round counter', async ({ page }) => {

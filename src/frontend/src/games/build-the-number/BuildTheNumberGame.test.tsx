@@ -1,12 +1,12 @@
 /**
  * Tests for Build The Number Game
- * 
+ *
  * Note: This component has complex dependencies (DnD, Zustand store, audio).
  * These tests verify the component renders without error and accepts props correctly.
  * Integration tests should cover the full game flow.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { BuildTheNumberGame } from './BuildTheNumberGame.js';
 
@@ -61,15 +61,15 @@ describe('BuildTheNumberGame', () => {
 
     it('accepts onProblemComplete callback', () => {
       const onProblemComplete = vi.fn();
-      expect(() => render(<BuildTheNumberGame onProblemComplete={onProblemComplete} />)).not.toThrow();
+      expect(() =>
+        render(<BuildTheNumberGame onProblemComplete={onProblemComplete} />),
+      ).not.toThrow();
     });
   });
 
   describe('styling', () => {
     it('accepts custom className', () => {
-      const { container } = render(
-        <BuildTheNumberGame className="custom-class" />,
-      );
+      const { container } = render(<BuildTheNumberGame className="custom-class" />);
 
       expect(container.querySelector('.custom-class')).toBeInTheDocument();
     });

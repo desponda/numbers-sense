@@ -12,6 +12,10 @@ build/
 # Coverage
 coverage/
 
+# Test artifacts
+playwright-report/
+test-results/
+
 # IDE
 .idea/
 .vscode/

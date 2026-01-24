@@ -113,7 +113,7 @@ describe('SortTheNumbersGame', () => {
   });
 
   describe('callbacks', () => {
-    it('calls onPhaseChange when phase changes', async () => {
+    it('calls onPhaseChange when phase changes', () => {
       const onPhaseChange = vi.fn();
       render(<SortTheNumbersGame onPhaseChange={onPhaseChange} />);
 

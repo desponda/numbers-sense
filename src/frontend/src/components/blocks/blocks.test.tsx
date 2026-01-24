@@ -12,7 +12,7 @@ import { TenRod } from './TenRod.js';
 import { UnitCube } from './UnitCube.js';
 
 // Wrapper to provide DnD context
-const DndWrapper = ({ children }: { children: React.ReactNode }) => (
+const DndWrapper = ({ children }: { children: React.ReactNode }): React.ReactElement => (
   <DndContext>{children}</DndContext>
 );
 

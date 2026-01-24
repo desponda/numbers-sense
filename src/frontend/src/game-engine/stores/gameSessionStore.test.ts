@@ -117,12 +117,14 @@ describe('gameSessionStore', () => {
         addBlock({ id: 'block-1', type: 'unit', value: 1 });
       });
 
-      const blockId = useGameSessionStore.getState().workspace[0]?.id;
-      expect(blockId).toBeDefined();
+      const block = useGameSessionStore.getState().workspace[0];
+      expect(block).toBeDefined();
 
-      act(() => {
-        removeBlock(blockId!);
-      });
+      if (block) {
+        act(() => {
+          removeBlock(block.id);
+        });
+      }
 
       expect(useGameSessionStore.getState().workspace).toHaveLength(0);
     });
@@ -140,9 +142,11 @@ describe('gameSessionStore', () => {
       const tenBlock = workspace.find((b) => b.type === 'ten');
       expect(tenBlock).toBeDefined();
 
-      act(() => {
-        removeBlock(tenBlock?.id!);
-      });
+      if (tenBlock) {
+        act(() => {
+          removeBlock(tenBlock.id);
+        });
+      }
 
       const newWorkspace = useGameSessionStore.getState().workspace;
       expect(newWorkspace).toHaveLength(2);
