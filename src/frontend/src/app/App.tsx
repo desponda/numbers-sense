@@ -1,6 +1,8 @@
 import { type JSX, useState, useCallback } from 'react';
 
 import { AppShell, Header, GameMenu, type GameType } from '../components/layout';
+import { BuildTheNumberGame } from '../games/build-the-number';
+import { SortTheNumbersGame } from '../games/sort-the-numbers';
 
 type AppView = 'menu' | 'build-number' | 'sort-numbers';
 
@@ -48,19 +50,9 @@ export const App = (): JSX.Element => {
   const renderContent = (): JSX.Element => {
     switch (currentView) {
       case 'build-number':
-        return (
-          <div className="flex flex-col items-center justify-center gap-4 py-8">
-            <h2 className="text-xl font-bold text-text-primary">Build the Number</h2>
-            <p className="text-text-secondary">Game coming soon!</p>
-          </div>
-        );
+        return <BuildTheNumberGame difficulty="easy" onSessionEnd={handleGoHome} />;
       case 'sort-numbers':
-        return (
-          <div className="flex flex-col items-center justify-center gap-4 py-8">
-            <h2 className="text-xl font-bold text-text-primary">Sort the Numbers</h2>
-            <p className="text-text-secondary">Game coming soon!</p>
-          </div>
-        );
+        return <SortTheNumbersGame difficulty="easy" onComplete={handleGoHome} />;
       default:
         return <GameMenu onSelectGame={handleSelectGame} />;
     }
