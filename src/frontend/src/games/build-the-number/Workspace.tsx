@@ -1,6 +1,6 @@
 import { useCallback, type JSX } from 'react';
 
-import { UnitCube } from '../../components/blocks';
+import { UnitCube, TenRod, HundredFlat } from '../../components/blocks';
 import { Droppable } from '../../components/dnd';
 
 import type { Block } from '../../game-engine';
@@ -187,8 +187,10 @@ export const Workspace = ({
               `}
               aria-label={`Remove ${block.type} block with value ${String(block.value)}`}
             >
-              {/* For Easy Mode, only unit cubes are used */}
+              {/* Render appropriate block component based on type */}
               {block.type === 'unit' && <UnitCube id={block.id} disabled />}
+              {block.type === 'ten' && <TenRod id={block.id} disabled />}
+              {block.type === 'hundred' && <HundredFlat id={block.id} disabled />}
             </button>
           ))}
         </div>

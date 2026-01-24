@@ -319,7 +319,7 @@ See `/docs/PROJECT-STATUS.md` for full details.
    - Set up Vitest
    - Unit tests for game engine, problem generator
    - Component tests for blocks, games
-   - E2E tests with Playwright
+   - E2E tests with Playwright`
 
 4. **Backend & Persistence (v1.1)**
    - Hono API server

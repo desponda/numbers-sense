@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
 
-import { BlockTray, UnitCube } from '../../components/blocks';
+import { BlockTray, UnitCube, TenRod, HundredFlat } from '../../components/blocks';
 import { DndProvider } from '../../components/dnd';
 import { Card } from '../../components/ui';
 import {
   useGameSessionStore,
   generateProblem,
+  DIFFICULTY_CONFIGS,
   type Block,
+  type BlockType,
   type DifficultyMode,
 } from '../../game-engine';
 
@@ -157,14 +159,19 @@ export const BuildTheNumberGame = ({
       const { active, over } = event;
 
       // Check if dropped on workspace
-      if (over?.id === 'workspace' && active.data.current?.type === 'unit') {
-        const newBlock: Block = {
-          id: generateBlockId(),
-          type: 'unit',
-          value: 1,
-        };
-        addBlock(newBlock);
-        setFeedback({ type: null, message: '' });
+      if (over?.id === 'workspace') {
+        const blockType = active.data.current?.type as BlockType | undefined;
+        const blockValue = active.data.current?.value as number | undefined;
+
+        if (blockType !== undefined && blockValue !== undefined) {
+          const newBlock: Block = {
+            id: generateBlockId(),
+            type: blockType,
+            value: blockValue as 1 | 10 | 100,
+          };
+          addBlock(newBlock);
+          setFeedback({ type: null, message: '' });
+        }
       }
     },
     [addBlock, generateBlockId],
@@ -248,6 +255,57 @@ export const BuildTheNumberGame = ({
     });
   }, [recordHintUsage]);
 
+  // Get allowed block types for current difficulty
+  const difficultyConfig = DIFFICULTY_CONFIGS[difficulty];
+  const { allowedBlocks } = difficultyConfig;
+
+  // Render available blocks based on difficulty
+  // Shows a small fixed set since blocks infinitely regenerate
+  const renderAvailableBlocks = (): JSX.Element[] => {
+    const blocks: JSX.Element[] = [];
+
+    // Always show unit cubes (5 of them - enough for interaction, not overwhelming)
+    if (allowedBlocks.includes('unit')) {
+      for (let i = 0; i < 5; i += 1) {
+        blocks.push(
+          <UnitCube
+            key={`tray-unit-${String(i)}`}
+            id={`tray-unit-${String(i)}`}
+            disabled={isAnimating}
+          />,
+        );
+      }
+    }
+
+    // Show ten rods for medium+ difficulty (3 of them)
+    if (allowedBlocks.includes('ten')) {
+      for (let i = 0; i < 3; i += 1) {
+        blocks.push(
+          <TenRod
+            key={`tray-ten-${String(i)}`}
+            id={`tray-ten-${String(i)}`}
+            disabled={isAnimating}
+          />,
+        );
+      }
+    }
+
+    // Show hundred flats for hard+ difficulty (2 of them)
+    if (allowedBlocks.includes('hundred')) {
+      for (let i = 0; i < 2; i += 1) {
+        blocks.push(
+          <HundredFlat
+            key={`tray-hundred-${String(i)}`}
+            id={`tray-hundred-${String(i)}`}
+            disabled={isAnimating}
+          />,
+        );
+      }
+    }
+
+    return blocks;
+  };
+
   // Render loading state if session not ready
   if (session === null) {
     return (
@@ -314,15 +372,8 @@ export const BuildTheNumberGame = ({
         />
 
         {/* Block tray - draggable blocks */}
-        <BlockTray id="block-tray" title="Available blocks">
-          {/* Show target + 2 blocks (enough to build answer with some exploration room) */}
-          {Array.from({ length: Math.min(targetValue + 2, 12) }).map((_, i) => (
-            <UnitCube
-              key={`tray-unit-${String(i)}`}
-              id={`tray-unit-${String(i)}`}
-              disabled={isAnimating}
-            />
-          ))}
+        <BlockTray id="block-tray" title="Drag blocks to workspace">
+          {renderAvailableBlocks()}
         </BlockTray>
 
         {/* Game controls */}
