@@ -5,7 +5,9 @@ import type { JSX } from 'react';
  */
 const BLOCK_COLORS = {
   unit: '#4ECDC4', // Teal for unit cubes
-  ten: '#FF6B6B', // Coral Red for ten rods
+  unitDark: '#3BB5AD', // Darker teal for segment lines
+  ten: '#4ECDC4', // Same teal for ten rods (they're made of units)
+  tenDark: '#3BB5AD', // Darker teal for segment lines
   hundred: '#95E1D3', // Mint Green for hundred flats
 } as const;
 
@@ -27,7 +29,7 @@ export interface BlockRepresentationProps {
  * Renders a single unit cube (value = 1)
  */
 const UnitCubeVisual = ({ scale = 1 }: { scale?: number }): JSX.Element => {
-  const size = 20 * scale;
+  const size = 16 * scale;
   return (
     <div
       className="rounded-sm"
@@ -36,10 +38,11 @@ const UnitCubeVisual = ({ scale = 1 }: { scale?: number }): JSX.Element => {
         height: `${String(size)}px`,
         backgroundColor: BLOCK_COLORS.unit,
         boxShadow: `
-          inset 1px 1px 2px rgba(255, 255, 255, 0.3),
-          inset -1px -1px 1px rgba(0, 0, 0, 0.1)
+          inset 1px 1px 2px rgba(255, 255, 255, 0.4),
+          inset -1px -1px 1px rgba(0, 0, 0, 0.1),
+          0 1px 2px rgba(0, 0, 0, 0.1)
         `,
-        border: '1px solid rgba(255, 255, 255, 0.2)',
+        border: `1px solid ${BLOCK_COLORS.unitDark}`,
       }}
       aria-hidden="true"
     />
@@ -47,78 +50,108 @@ const UnitCubeVisual = ({ scale = 1 }: { scale?: number }): JSX.Element => {
 };
 
 /**
- * Renders a ten rod (value = 10) as a horizontal strip of 10 segments
+ * Renders a vertical ten rod (value = 10) - compact vertical bar with segment lines
  */
 const TenRodVisual = ({ scale = 1 }: { scale?: number }): JSX.Element => {
-  const segmentSize = 20 * scale;
-  const gap = 1 * scale;
+  const width = 16 * scale;
+  const height = 80 * scale; // 5x height for compactness while showing value
 
   return (
     <div
-      className="flex rounded-sm"
+      className="rounded-md relative"
       style={{
-        height: `${String(segmentSize)}px`,
+        width: `${String(width)}px`,
+        height: `${String(height)}px`,
         backgroundColor: BLOCK_COLORS.ten,
-        padding: `${String(gap)}px`,
-        gap: `${String(gap)}px`,
+        boxShadow: `
+          inset 2px 2px 4px rgba(255, 255, 255, 0.4),
+          inset -1px -1px 2px rgba(0, 0, 0, 0.1),
+          0 2px 4px rgba(0, 0, 0, 0.15)
+        `,
+        border: `1px solid ${BLOCK_COLORS.tenDark}`,
+        overflow: 'hidden',
       }}
       aria-hidden="true"
     >
-      {Array.from({ length: 10 }, (_, i) => (
-        <div
-          key={i}
-          className="rounded-sm"
-          style={{
-            width: `${String(segmentSize - 2 * gap)}px`,
-            height: '100%',
-            backgroundColor: BLOCK_COLORS.ten,
-            boxShadow: `
-              inset 1px 1px 2px rgba(255, 255, 255, 0.3),
-              inset -1px -1px 1px rgba(0, 0, 0, 0.1)
-            `,
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-          }}
-        />
-      ))}
+      {/* Horizontal segment lines showing 10 parts */}
+      <svg
+        width="100%"
+        height="100%"
+        style={{ position: 'absolute', top: 0, left: 0 }}
+        aria-hidden="true"
+      >
+        {Array.from({ length: 9 }, (_, i) => (
+          <line
+            key={i}
+            x1="15%"
+            y1={`${String((i + 1) * 10)}%`}
+            x2="85%"
+            y2={`${String((i + 1) * 10)}%`}
+            stroke={BLOCK_COLORS.tenDark}
+            strokeWidth="1"
+            strokeOpacity="0.4"
+          />
+        ))}
+      </svg>
     </div>
   );
 };
 
 /**
- * Renders a hundred flat (value = 100) as a 10x10 grid
+ * Renders a hundred flat (value = 100) as a compact square
  */
 const HundredFlatVisual = ({ scale = 1 }: { scale?: number }): JSX.Element => {
-  const cellSize = 16 * scale;
-  const gap = 1 * scale;
+  const size = 80 * scale; // Same height as ten rod for visual alignment
 
   return (
     <div
-      className="rounded-md"
+      className="rounded-md relative"
       style={{
-        display: 'grid',
-        gridTemplateColumns: `repeat(10, ${String(cellSize)}px)`,
-        gap: `${String(gap)}px`,
-        padding: `${String(2 * scale)}px`,
+        width: `${String(size)}px`,
+        height: `${String(size)}px`,
         backgroundColor: BLOCK_COLORS.hundred,
+        boxShadow: `
+          inset 2px 2px 4px rgba(255, 255, 255, 0.4),
+          inset -1px -1px 2px rgba(0, 0, 0, 0.1),
+          0 2px 4px rgba(0, 0, 0, 0.15)
+        `,
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+        overflow: 'hidden',
       }}
       aria-hidden="true"
     >
-      {Array.from({ length: 100 }, (_, i) => (
-        <div
-          key={i}
-          className="rounded-sm"
-          style={{
-            width: `${String(cellSize)}px`,
-            height: `${String(cellSize)}px`,
-            backgroundColor: BLOCK_COLORS.hundred,
-            boxShadow: `
-              inset 1px 1px 1px rgba(255, 255, 255, 0.3),
-              inset -0.5px -0.5px 0.5px rgba(0, 0, 0, 0.08)
-            `,
-            border: '0.5px solid rgba(255, 255, 255, 0.2)',
-          }}
-        />
-      ))}
+      {/* 10x10 grid lines */}
+      <svg
+        width="100%"
+        height="100%"
+        style={{ position: 'absolute', top: 0, left: 0 }}
+        aria-hidden="true"
+      >
+        {/* Vertical lines */}
+        {Array.from({ length: 9 }, (_, i) => (
+          <line
+            key={`v-${String(i)}`}
+            x1={`${String((i + 1) * 10)}%`}
+            y1="5%"
+            x2={`${String((i + 1) * 10)}%`}
+            y2="95%"
+            stroke="rgba(0, 0, 0, 0.15)"
+            strokeWidth="0.5"
+          />
+        ))}
+        {/* Horizontal lines */}
+        {Array.from({ length: 9 }, (_, i) => (
+          <line
+            key={`h-${String(i)}`}
+            x1="5%"
+            y1={`${String((i + 1) * 10)}%`}
+            x2="95%"
+            y2={`${String((i + 1) * 10)}%`}
+            stroke="rgba(0, 0, 0, 0.15)"
+            strokeWidth="0.5"
+          />
+        ))}
+      </svg>
     </div>
   );
 };
@@ -126,23 +159,18 @@ const HundredFlatVisual = ({ scale = 1 }: { scale?: number }): JSX.Element => {
 /**
  * BlockRepresentation - Visual representation of a number using base-10 blocks.
  *
- * This component displays a number using the canonical base-10 block representation:
- * - Hundred flats (10x10 grids) for hundreds place
- * - Ten rods (horizontal strips) for tens place
- * - Unit cubes (small squares) for ones place
+ * Uses a VERTICAL layout optimized for small screens:
+ * - Hundred flats as compact 10x10 squares
+ * - Ten rods as vertical bars (arranged side-by-side)
+ * - Unit cubes in a compact grid
  *
- * Used in Phase 1 of the Sort the Numbers game where children sort
- * visual representations before transitioning to numeric sorting.
- *
- * Design follows game-mechanics.md specification:
- * - Maintains proportional relationships between block types
- * - Uses consistent colors from the spec
- * - Read-only visualization (not draggable)
+ * This layout eliminates horizontal scrolling while maintaining
+ * proportional relationships between block types.
  *
  * @example
  * ```tsx
  * <BlockRepresentation value={35} showValue />
- * // Renders: 3 ten rods + 5 unit cubes with "35" below
+ * // Renders: 3 vertical ten rods + 5 unit cubes with "35" below
  * ```
  */
 export const BlockRepresentation = ({
@@ -173,25 +201,35 @@ export const BlockRepresentation = ({
 
   return (
     <div
-      className={`flex flex-col items-center gap-2 ${className}`}
+      className={`flex flex-col items-center ${className}`}
       role="img"
       aria-label={getAriaLabel()}
     >
-      {/* Block visualization container */}
-      <div className="flex flex-col items-start gap-2 p-2">
+      {/* Block visualization - horizontal row layout */}
+      <div className="flex items-end gap-1" style={{ minHeight: `${String(84 * scale)}px` }}>
         {/* Hundred flats */}
         {Array.from({ length: hundreds }, (_, i) => (
-          <HundredFlatVisual key={`hundred-${String(i)}`} scale={scale * 0.5} />
+          <HundredFlatVisual key={`hundred-${String(i)}`} scale={scale} />
         ))}
 
-        {/* Ten rods */}
-        {Array.from({ length: tens }, (_, i) => (
-          <TenRodVisual key={`ten-${String(i)}`} scale={scale} />
-        ))}
+        {/* Ten rods - vertical bars side by side */}
+        {tens > 0 && (
+          <div className="flex gap-[2px]">
+            {Array.from({ length: tens }, (_, i) => (
+              <TenRodVisual key={`ten-${String(i)}`} scale={scale} />
+            ))}
+          </div>
+        )}
 
-        {/* Unit cubes - arranged in rows of 5 for easier counting */}
+        {/* Unit cubes - compact 2-column grid */}
         {ones > 0 && (
-          <div className="flex flex-wrap gap-1" style={{ maxWidth: `${String(110 * scale)}px` }}>
+          <div
+            className="grid gap-[2px]"
+            style={{
+              gridTemplateColumns: `repeat(2, ${String(16 * scale)}px)`,
+              alignSelf: 'end',
+            }}
+          >
             {Array.from({ length: ones }, (_, i) => (
               <UnitCubeVisual key={`unit-${String(i)}`} scale={scale} />
             ))}
@@ -202,8 +240,8 @@ export const BlockRepresentation = ({
       {/* Optional value label */}
       {showValue && (
         <div
-          className="text-text-primary font-semibold text-center"
-          style={{ fontSize: `${String(16 * scale)}px` }}
+          className="text-text-primary font-bold text-center mt-1"
+          style={{ fontSize: `${String(14 * scale)}px` }}
         >
           = {value}
         </div>

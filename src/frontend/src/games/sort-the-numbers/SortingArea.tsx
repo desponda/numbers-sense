@@ -134,7 +134,7 @@ export const SortingArea = ({
       {showPositions && (
         <div
           className={`
-            flex gap-2
+            flex gap-2 flex-wrap
             ${isHorizontal ? 'flex-row justify-center' : 'flex-col items-center'}
           `}
         >
@@ -142,7 +142,7 @@ export const SortingArea = ({
             <div
               key={`position-${String(index)}`}
               className={`
-                w-20 h-6
+                min-w-[3rem] px-2 h-6
                 flex items-center justify-center
                 text-xs font-medium
                 rounded-lg
@@ -162,11 +162,11 @@ export const SortingArea = ({
         <div
           className={`
             flex gap-3 p-3
-            min-h-[100px]
+            min-h-[120px]
             bg-white
             rounded-xl
             shadow-soft
-            ${isHorizontal ? 'flex-row justify-start items-center overflow-x-auto' : 'flex-col items-center'}
+            ${isHorizontal ? 'flex-row flex-wrap justify-center items-end' : 'flex-col items-center'}
           `}
           role="list"
           aria-label="Sortable numbers - drag items left to right from smallest to biggest"
