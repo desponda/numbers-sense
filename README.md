@@ -12,9 +12,11 @@ A playful, modern, clean, joyful math app that builds number sense (not memoriza
 ## Games
 
 ### Build the Number
+
 Use virtual base-10 blocks to construct target numbers. Students develop place value understanding by physically building numbers with hundreds, tens, and ones.
 
 ### Sort the Numbers
+
 Arrange numbers by magnitude, progressing from visual representations to numeric. Builds number comparison and ordering skills.
 
 ## Tech Stack
@@ -47,15 +49,15 @@ npm run test:ui     # Vitest UI
 
 ## Development
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server |
-| `npm run build` | Production build |
-| `npm run lint` | Run ESLint |
-| `npm run typecheck` | TypeScript check |
-| `npm run test` | Run test suite (149 tests) |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run test:coverage` | Run tests with coverage |
+| Command                 | Description                |
+| ----------------------- | -------------------------- |
+| `npm run dev`           | Start dev server           |
+| `npm run build`         | Production build           |
+| `npm run lint`          | Run ESLint                 |
+| `npm run typecheck`     | TypeScript check           |
+| `npm run test`          | Run test suite (149 tests) |
+| `npm run test:watch`    | Run tests in watch mode    |
+| `npm run test:coverage` | Run tests with coverage    |
 
 ## Project Structure
 
@@ -72,6 +74,7 @@ npm run test:ui     # Vitest UI
 ## Documentation
 
 See the `/docs` folder for detailed documentation:
+
 - `/docs/research` - Educational research and references
 - `/docs/architecture` - Technical architecture decisions
 - `/docs/specs` - Feature specifications
