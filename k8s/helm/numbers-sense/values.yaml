@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/desponda/numbers-sense
   pullPolicy: Always
-  tag: chaoskube
+  tag: "565f9cb"
 
 imagePullSecrets: []  # No secrets needed - image is public
 nameOverride: ""
