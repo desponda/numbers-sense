@@ -11,6 +11,8 @@ out/
 
 # Testing
 coverage/
+playwright-report/
+test-results/
 
 # Environment
 .env
