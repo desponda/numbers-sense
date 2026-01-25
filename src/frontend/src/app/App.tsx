@@ -2,10 +2,12 @@ import { type JSX, useState, useCallback } from 'react';
 
 import { AppShell, Header, GameMenu, type GameType } from '../components/layout';
 import { Button } from '../components/ui';
+import { AdditionRaceGame } from '../games/addition-race';
 import { BuildTheNumberGame } from '../games/build-the-number';
 import { DivisionRaceGame } from '../games/division-race';
 import { MultiplicationRaceGame } from '../games/multiplication-race';
 import { SortTheNumbersGame } from '../games/sort-the-numbers';
+import { SubtractionRaceGame } from '../games/subtraction-race';
 
 import type { DifficultyMode } from '../game-engine';
 
@@ -15,6 +17,8 @@ type AppView =
   | 'sort-numbers'
   | 'multiplication-race'
   | 'division-race'
+  | 'addition-race'
+  | 'subtraction-race'
   | 'difficulty-select';
 
 /**
@@ -66,6 +70,52 @@ const getDifficultyOptions = (gameType: GameType | null): DifficultyOption[] => 
         mode: 'medium',
         label: 'Medium',
         description: 'All division facts 1-9',
+        color: 'bg-primary/20 border-primary hover:bg-primary/30',
+      },
+      {
+        mode: 'hard',
+        label: 'Hard',
+        description: 'All facts, 3× repetitions',
+        color: 'bg-secondary/20 border-secondary hover:bg-secondary/30',
+      },
+    ];
+  }
+
+  if (gameType === 'addition-race') {
+    return [
+      {
+        mode: 'easy',
+        label: 'Easy',
+        description: 'Addition facts 0-5 only',
+        color: 'bg-success/20 border-success hover:bg-success/30',
+      },
+      {
+        mode: 'medium',
+        label: 'Medium',
+        description: 'All addition facts 0-9',
+        color: 'bg-primary/20 border-primary hover:bg-primary/30',
+      },
+      {
+        mode: 'hard',
+        label: 'Hard',
+        description: 'All facts, 3× repetitions',
+        color: 'bg-secondary/20 border-secondary hover:bg-secondary/30',
+      },
+    ];
+  }
+
+  if (gameType === 'subtraction-race') {
+    return [
+      {
+        mode: 'easy',
+        label: 'Easy',
+        description: 'Subtraction facts 0-5 only',
+        color: 'bg-success/20 border-success hover:bg-success/30',
+      },
+      {
+        mode: 'medium',
+        label: 'Medium',
+        description: 'All subtraction facts 0-9',
         color: 'bg-primary/20 border-primary hover:bg-primary/30',
       },
       {
@@ -162,6 +212,10 @@ export const App = (): JSX.Element => {
         return 'Multiplication Race';
       case 'division-race':
         return 'Division Race';
+      case 'addition-race':
+        return 'Addition Race';
+      case 'subtraction-race':
+        return 'Subtraction Race';
       default:
         return undefined;
     }
@@ -178,6 +232,10 @@ export const App = (): JSX.Element => {
         return 'Multiplication Race';
       case 'division-race':
         return 'Division Race';
+      case 'addition-race':
+        return 'Addition Race';
+      case 'subtraction-race':
+        return 'Subtraction Race';
       default:
         return 'Select a Game';
     }
@@ -246,6 +304,10 @@ export const App = (): JSX.Element => {
         return <MultiplicationRaceGame difficulty={getRaceDifficulty()} />;
       case 'division-race':
         return <DivisionRaceGame difficulty={getRaceDifficulty()} />;
+      case 'addition-race':
+        return <AdditionRaceGame difficulty={getRaceDifficulty()} />;
+      case 'subtraction-race':
+        return <SubtractionRaceGame difficulty={getRaceDifficulty()} />;
       default:
         return <GameMenu onSelectGame={handleSelectGame} />;
     }

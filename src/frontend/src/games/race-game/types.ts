@@ -6,7 +6,7 @@
  */
 
 // Game type identifiers
-export type GameType = 'multiplication' | 'division';
+export type GameType = 'multiplication' | 'division' | 'addition' | 'subtraction';
 
 // Difficulty levels
 export type Difficulty = 'easy' | 'medium' | 'hard';

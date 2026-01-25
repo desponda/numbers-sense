@@ -212,6 +212,77 @@ describe('factMasteryTracker', () => {
     });
   });
 
+  describe('Addition Specific', () => {
+    it('initializes 10 addition facts for a lane', () => {
+      const facts = generateLaneFacts('addition', 7);
+      expect(facts).toHaveLength(10);
+      // Lane 7: 7+0, 7+1, 7+2, ..., 7+9
+      expect(facts).toEqual(['7+0', '7+1', '7+2', '7+3', '7+4', '7+5', '7+6', '7+7', '7+8', '7+9']);
+    });
+
+    it('correctly tracks addition facts', () => {
+      const masteryMap = initializeFactMastery('addition', 'medium');
+      markFactCorrect('7+8', masteryMap, 'medium');
+      markFactCorrect('7+8', masteryMap, 'medium');
+
+      const mastery = masteryMap['7+8'];
+      expect(mastery?.mastered).toBe(true);
+    });
+
+    it('addition lane 0 generates valid facts', () => {
+      const facts = generateLaneFacts('addition', 0);
+      expect(facts).toHaveLength(10);
+      expect(facts[0]).toBe('0+0');
+      expect(facts[9]).toBe('0+9');
+    });
+
+    it('addition lane 9 generates valid facts', () => {
+      const facts = generateLaneFacts('addition', 9);
+      expect(facts).toHaveLength(10);
+      expect(facts[0]).toBe('9+0');
+      expect(facts[9]).toBe('9+9');
+    });
+  });
+
+  describe('Subtraction Specific', () => {
+    it('initializes correct number of subtraction facts for a lane', () => {
+      const facts = generateLaneFacts('subtraction', 7);
+      expect(facts).toHaveLength(8); // 7-0 through 7-7 (8 facts, can't subtract more than minuend)
+      // Lane 7: 7-0, 7-1, 7-2, ..., 7-7
+      expect(facts).toEqual(['7-0', '7-1', '7-2', '7-3', '7-4', '7-5', '7-6', '7-7']);
+    });
+
+    it('correctly tracks subtraction facts', () => {
+      const masteryMap = initializeFactMastery('subtraction', 'medium');
+      markFactCorrect('7-3', masteryMap, 'medium');
+      markFactCorrect('7-3', masteryMap, 'medium');
+
+      const mastery = masteryMap['7-3'];
+      expect(mastery?.mastered).toBe(true);
+    });
+
+    it('subtraction lane 0 generates only one fact (0-0)', () => {
+      const facts = generateLaneFacts('subtraction', 0);
+      expect(facts).toHaveLength(1);
+      expect(facts[0]).toBe('0-0');
+    });
+
+    it('subtraction lane 9 generates facts 9-0 through 9-9', () => {
+      const facts = generateLaneFacts('subtraction', 9);
+      expect(facts).toHaveLength(10);
+      expect(facts[0]).toBe('9-0');
+      expect(facts[9]).toBe('9-9');
+    });
+
+    it('subtraction lane 3 does not generate invalid facts', () => {
+      const facts = generateLaneFacts('subtraction', 3);
+      // Should only have 3-0, 3-1, 3-2, 3-3 (4 facts)
+      expect(facts).toHaveLength(4);
+      expect(facts).not.toContain('3-4'); // Invalid: would be negative
+      expect(facts).not.toContain('3-5'); // Invalid: would be negative
+    });
+  });
+
   describe('Difficulty-Based Mastery Thresholds', () => {
     it('easy difficulty requires 2 correct answers', () => {
       const required = getRepetitionsRequired('easy');

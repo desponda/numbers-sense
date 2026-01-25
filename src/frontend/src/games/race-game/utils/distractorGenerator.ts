@@ -186,3 +186,210 @@ export function generateDivisionDistractors(
   // Return exactly 3 distractors
   return filtered.slice(0, 3);
 }
+
+/**
+ * Generate 3 distractors for an addition question
+ *
+ * Strategy distribution:
+ * - 50% Off-by-one sum (sum ± 1)
+ * - 30% Adjacent addend errors (N+(M±1) or (N±1)+M)
+ * - 20% Plausible range (sum ± small offset)
+ *
+ * @param addend1 First number (N in N+M)
+ * @param addend2 Second number (M in N+M)
+ * @param correct Correct sum
+ * @returns Array of 3 unique distractors
+ */
+export function generateAdditionDistractors(
+  addend1: number,
+  addend2: number,
+  correct: number,
+): number[] {
+  const distractors: number[] = [];
+
+  // Strategy 1: Off-by-one sum (50% probability)
+  if (Math.random() < 0.5) {
+    if (correct > 0) {
+      distractors.push(correct - 1);
+    }
+    if (correct < 18) {
+      // Max sum is 9+9=18
+      distractors.push(correct + 1);
+    }
+  } else {
+    // Strategy 2: Adjacent addend confusion (30% of total, but 50% when not using off-by-one)
+    // Adjacent to second addend (N + (M±1))
+    if (addend2 > 0) {
+      distractors.push(addend1 + (addend2 - 1));
+    }
+    if (addend2 < 9) {
+      distractors.push(addend1 + (addend2 + 1));
+    }
+  }
+
+  // Add subtraction confusion (common error: doing subtraction instead of addition)
+  if (distractors.length < 3 && addend1 >= addend2) {
+    const subtractionResult = addend1 - addend2;
+    if (subtractionResult !== correct && subtractionResult >= 0) {
+      distractors.push(subtractionResult);
+    }
+  }
+
+  // Strategy 3: Plausible range (small offset from correct)
+  if (distractors.length < 3) {
+    const offset = Math.floor(Math.random() * 3) + 2; // 2-4 offset
+    const usePositive = Math.random() < 0.5;
+    const value = correct + (usePositive ? offset : -offset);
+    if (value >= 0 && value <= 18) {
+      distractors.push(value);
+    }
+  }
+
+  // Add more random but plausible distractors if still needed
+  let attempts = 0;
+  while (distractors.length < 10 && attempts < 20) {
+    attempts += 1;
+
+    // Generate from nearby addends
+    const nearbyAddend1 = addend1 + (Math.random() < 0.5 ? -1 : 1);
+    const nearbyAddend2 = addend2 + (Math.random() < 0.5 ? -1 : 1);
+
+    if (nearbyAddend1 >= 0 && nearbyAddend1 <= 9) {
+      if (nearbyAddend2 >= 0 && nearbyAddend2 <= 9) {
+        distractors.push(nearbyAddend1 + nearbyAddend2);
+      }
+    }
+
+    // Also add some simple offsets from correct answer
+    const offset = Math.floor(Math.random() * 5) + 1;
+    const value = correct + (Math.random() < 0.5 ? offset : -offset);
+    if (value >= 0 && value <= 18) {
+      distractors.push(value);
+    }
+  }
+
+  // Deduplicate and filter, ensuring all are in valid range [0-18]
+  const filtered = deduplicateAndFilter(distractors, correct).filter((d) => d >= 0 && d <= 18);
+
+  // If we still don't have 3, generate simple sequential distractors
+  if (filtered.length < 3) {
+    let value = 0;
+    while (filtered.length < 3 && value <= 18) {
+      if (value !== correct && !filtered.includes(value)) {
+        filtered.push(value);
+      }
+      value += 1;
+    }
+  }
+
+  // Return exactly 3 distractors
+  return filtered.slice(0, 3);
+}
+
+/**
+ * Generate 3 distractors for a subtraction question
+ *
+ * Strategy distribution:
+ * - 50% Off-by-one difference (difference ± 1)
+ * - 30% Operation confusion (addition instead of subtraction, reversed subtraction)
+ * - 20% Adjacent subtrahend errors (N-(M±1))
+ *
+ * @param minuend Number being subtracted from (N in N-M)
+ * @param subtrahend Number being subtracted (M in N-M)
+ * @param correct Correct difference
+ * @returns Array of 3 unique distractors
+ */
+export function generateSubtractionDistractors(
+  minuend: number,
+  subtrahend: number,
+  correct: number,
+): number[] {
+  const distractors: number[] = [];
+
+  // Strategy 1: Off-by-one difference (50% probability)
+  if (Math.random() < 0.5) {
+    if (correct > 0) {
+      distractors.push(correct - 1);
+    }
+    if (correct < minuend) {
+      distractors.push(correct + 1);
+    }
+  } else {
+    // Strategy 2: Adjacent subtrahend confusion (N - (M±1))
+    if (subtrahend > 0) {
+      const value = minuend - (subtrahend - 1);
+      if (value !== correct && value >= 0) {
+        distractors.push(value);
+      }
+    }
+    if (subtrahend < 9) {
+      const value = minuend - (subtrahend + 1);
+      if (value !== correct && value >= 0) {
+        distractors.push(value);
+      }
+    }
+  }
+
+  // Strategy 3: Operation confusion (30%)
+  // Show addition result (common error: doing addition instead of subtraction)
+  const additionResult = minuend + subtrahend;
+  if (additionResult !== correct && additionResult <= 18) {
+    distractors.push(additionResult);
+  }
+
+  // Reversed subtraction (M - N instead of N - M)
+  if (subtrahend >= minuend) {
+    const reversedResult = subtrahend - minuend;
+    if (reversedResult !== correct && reversedResult >= 0) {
+      distractors.push(reversedResult);
+    }
+  }
+
+  // Strategy 4: Plausible range (small offset from correct)
+  if (distractors.length < 3) {
+    const offset = Math.floor(Math.random() * 3) + 2; // 2-4 offset
+    const usePositive = Math.random() < 0.5;
+    const value = correct + (usePositive ? offset : -offset);
+    if (value >= 0 && value <= minuend) {
+      distractors.push(value);
+    }
+  }
+
+  // Add more plausible values if needed
+  let attempts = 0;
+  while (distractors.length < 10 && attempts < 20) {
+    attempts += 1;
+
+    // Generate from nearby subtrahends
+    const nearbySubtrahend = subtrahend + (Math.random() < 0.5 ? -1 : 1);
+    if (nearbySubtrahend >= 0 && nearbySubtrahend <= 9) {
+      const value = minuend - nearbySubtrahend;
+      if (value >= 0 && value <= 9) {
+        distractors.push(value);
+      }
+    }
+
+    // Random values in valid range
+    const randomValue = Math.floor(Math.random() * (minuend + 1));
+    if (randomValue !== correct) {
+      distractors.push(randomValue);
+    }
+  }
+
+  // Deduplicate and filter, ensuring all are in valid range [0-9]
+  const filtered = deduplicateAndFilter(distractors, correct).filter((d) => d >= 0 && d <= 9);
+
+  // If we still don't have 3, generate simple sequential distractors
+  if (filtered.length < 3) {
+    let value = 0;
+    while (filtered.length < 3 && value <= 9) {
+      if (value !== correct && !filtered.includes(value)) {
+        filtered.push(value);
+      }
+      value += 1;
+    }
+  }
+
+  // Return exactly 3 distractors
+  return filtered.slice(0, 3);
+}

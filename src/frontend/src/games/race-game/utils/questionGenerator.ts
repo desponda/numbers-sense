@@ -7,6 +7,8 @@
 import {
   generateMultiplicationDistractors,
   generateDivisionDistractors,
+  generateAdditionDistractors,
+  generateSubtractionDistractors,
 } from './distractorGenerator';
 
 import type { GameType, RaceQuestion } from '../types';
@@ -166,10 +168,126 @@ export function generateDivisionQuestion(divisor: number, unmasteredFacts: strin
 }
 
 /**
+ * Generate an addition question
+ *
+ * @param addend1 Lane number (N in N+M)
+ * @param unmasteredFacts Array of unmastered facts for this lane
+ * @returns A complete race question with shuffled options
+ */
+export function generateAdditionQuestion(addend1: number, unmasteredFacts: string[]): RaceQuestion {
+  // Select a random unmastered fact
+  const fact = selectRandomFact(unmasteredFacts);
+
+  // Parse the fact (e.g., "7+8" -> addend1=7, addend2=8)
+  const parts = fact.split('+');
+  const addend2Str = parts[1];
+
+  if (addend2Str === undefined) {
+    throw new Error(`Invalid addition fact format: ${fact}`);
+  }
+
+  const addend2 = parseInt(addend2Str, 10);
+
+  if (Number.isNaN(addend2)) {
+    throw new Error(`Invalid addend in fact: ${fact}`);
+  }
+
+  // Calculate correct answer
+  const correctAnswer = addend1 + addend2;
+
+  // Generate 3 distractors
+  const distractors = generateAdditionDistractors(addend1, addend2, correctAnswer);
+
+  // Ensure we have exactly 3 distractors
+  if (distractors.length < 3) {
+    throw new Error(
+      `Failed to generate 3 distractors for ${fact}. Got ${String(distractors.length)}`,
+    );
+  }
+
+  // Combine correct answer with distractors and shuffle
+  const options = shuffle([correctAnswer, ...distractors.slice(0, 3)]);
+
+  // Find index of correct answer in shuffled options
+  const correctIndex = options.indexOf(correctAnswer);
+
+  return {
+    lane: addend1,
+    questionText: `${String(addend1)} + ${String(addend2)} = ?`,
+    correctAnswer,
+    options,
+    correctIndex,
+    fact,
+  };
+}
+
+/**
+ * Generate a subtraction question
+ *
+ * @param minuend Lane number (N in N-M where N is the minuend)
+ * @param unmasteredFacts Array of unmastered facts for this lane
+ * @returns A complete race question with shuffled options
+ */
+export function generateSubtractionQuestion(
+  minuend: number,
+  unmasteredFacts: string[],
+): RaceQuestion {
+  // Select a random unmastered fact
+  const fact = selectRandomFact(unmasteredFacts);
+
+  // Parse the fact (e.g., "7-3" -> minuend=7, subtrahend=3)
+  const parts = fact.split('-');
+  const subtrahendStr = parts[1];
+
+  if (subtrahendStr === undefined) {
+    throw new Error(`Invalid subtraction fact format: ${fact}`);
+  }
+
+  const subtrahend = parseInt(subtrahendStr, 10);
+
+  if (Number.isNaN(subtrahend)) {
+    throw new Error(`Invalid subtrahend in fact: ${fact}`);
+  }
+
+  // Calculate correct answer (difference)
+  const difference = minuend - subtrahend;
+
+  // Ensure difference is non-negative (should always be true for our facts)
+  if (difference < 0) {
+    throw new Error(`Subtraction fact ${fact} results in negative number`);
+  }
+
+  // Generate 3 distractors
+  const distractors = generateSubtractionDistractors(minuend, subtrahend, difference);
+
+  // Ensure we have exactly 3 distractors
+  if (distractors.length < 3) {
+    throw new Error(
+      `Failed to generate 3 distractors for ${fact}. Got ${String(distractors.length)}`,
+    );
+  }
+
+  // Combine correct answer with distractors and shuffle
+  const options = shuffle([difference, ...distractors.slice(0, 3)]);
+
+  // Find index of correct answer in shuffled options
+  const correctIndex = options.indexOf(difference);
+
+  return {
+    lane: minuend,
+    questionText: `${String(minuend)} - ${String(subtrahend)} = ?`,
+    correctAnswer: difference,
+    options,
+    correctIndex,
+    fact,
+  };
+}
+
+/**
  * Main question generation function
  * Delegates to game-specific generators
  *
- * @param gameType Type of game (multiplication or division)
+ * @param gameType Type of game (multiplication, division, addition, or subtraction)
  * @param lane Lane number to generate question for
  * @param unmasteredFacts Array of unmastered facts for this lane
  * @returns A complete race question
@@ -187,6 +305,14 @@ export function generateRaceQuestion(
     return generateMultiplicationQuestion(lane, unmasteredFacts);
   }
 
-  // gameType === 'division'
-  return generateDivisionQuestion(lane, unmasteredFacts);
+  if (gameType === 'division') {
+    return generateDivisionQuestion(lane, unmasteredFacts);
+  }
+
+  if (gameType === 'addition') {
+    return generateAdditionQuestion(lane, unmasteredFacts);
+  }
+
+  // gameType === 'subtraction'
+  return generateSubtractionQuestion(lane, unmasteredFacts);
 }

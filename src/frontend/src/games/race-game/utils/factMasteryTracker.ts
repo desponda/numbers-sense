@@ -44,13 +44,45 @@ function generateDivisionFacts(lane: number): string[] {
 }
 
 /**
+ * Generate all facts for an addition lane
+ * For lane N, generates: N+0, N+1, N+2, ..., N+9
+ */
+function generateAdditionFacts(lane: number): string[] {
+  const facts: string[] = [];
+  for (let addend2 = 0; addend2 <= 9; addend2 += 1) {
+    facts.push(`${String(lane)}+${String(addend2)}`);
+  }
+  return facts;
+}
+
+/**
+ * Generate all facts for a subtraction lane
+ * For lane N (minuend), generates: N-0, N-1, N-2, ..., N-9
+ * Note: Only generates valid facts where N >= subtrahend
+ */
+function generateSubtractionFacts(lane: number): string[] {
+  const facts: string[] = [];
+  for (let subtrahend = 0; subtrahend <= Math.min(lane, 9); subtrahend += 1) {
+    facts.push(`${String(lane)}-${String(subtrahend)}`);
+  }
+  return facts;
+}
+
+/**
  * Generate all facts for a given lane
  */
 export function generateLaneFacts(gameType: GameType, lane: number): string[] {
   if (gameType === 'multiplication') {
     return generateMultiplicationFacts(lane);
   }
-  return generateDivisionFacts(lane);
+  if (gameType === 'division') {
+    return generateDivisionFacts(lane);
+  }
+  if (gameType === 'addition') {
+    return generateAdditionFacts(lane);
+  }
+  // gameType === 'subtraction'
+  return generateSubtractionFacts(lane);
 }
 
 /**
@@ -65,11 +97,28 @@ function getLanesForDifficulty(gameType: GameType, difficulty: Difficulty): numb
     return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; // 10 lanes
   }
 
-  // Division lanes: 1-9 (no division by zero)
-  if (difficulty === 'easy') {
-    return [1, 2, 3, 4, 5]; // 5 lanes
+  if (gameType === 'division') {
+    // Division lanes: 1-9 (no division by zero)
+    if (difficulty === 'easy') {
+      return [1, 2, 3, 4, 5]; // 5 lanes
+    }
+    return [1, 2, 3, 4, 5, 6, 7, 8, 9]; // 9 lanes
   }
-  return [1, 2, 3, 4, 5, 6, 7, 8, 9]; // 9 lanes
+
+  if (gameType === 'addition') {
+    // Addition lanes: 0-9
+    if (difficulty === 'easy') {
+      return [0, 1, 2, 3, 4, 5]; // 6 lanes
+    }
+    return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; // 10 lanes
+  }
+
+  // Subtraction lanes: 0-9
+  // Note: subtraction facts are lane-subtrahend where subtrahend <= lane
+  if (difficulty === 'easy') {
+    return [0, 1, 2, 3, 4, 5]; // 6 lanes
+  }
+  return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; // 10 lanes
 }
 
 /**

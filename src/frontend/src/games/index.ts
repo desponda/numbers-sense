@@ -13,3 +13,16 @@ export type {
   WorkspaceProps,
   GameControlsProps,
 } from './build-the-number';
+
+// Race games
+export { MultiplicationRaceGame } from './multiplication-race';
+export type { MultiplicationRaceGameProps } from './multiplication-race';
+
+export { DivisionRaceGame } from './division-race';
+export type { DivisionRaceGameProps } from './division-race';
+
+export { AdditionRaceGame } from './addition-race';
+export type { AdditionRaceGameProps } from './addition-race';
+
+export { SubtractionRaceGame } from './subtraction-race';
+export type { SubtractionRaceGameProps } from './subtraction-race';

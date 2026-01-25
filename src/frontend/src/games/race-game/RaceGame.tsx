@@ -23,8 +23,8 @@ export interface GameStats {
  * Props for the RaceGame component
  */
 export interface RaceGameProps {
-  /** Type of race game (multiplication or division) */
-  gameType: 'multiplication' | 'division';
+  /** Type of race game (multiplication, division, addition, or subtraction) */
+  gameType: 'multiplication' | 'division' | 'addition' | 'subtraction';
   /** Difficulty level */
   difficulty: 'easy' | 'medium' | 'hard';
   /** Callback when game completes */
@@ -37,8 +37,8 @@ export interface RaceGameProps {
  * RaceGame - Main container component for race game functionality
  *
  * Orchestrates the bike race game where students answer math facts
- * to advance bikes across finish lines. Supports both multiplication
- * and division modes.
+ * to advance bikes across finish lines. Supports multiplication,
+ * division, addition, and subtraction modes.
  *
  * Game Flow:
  * 1. Initialize game with lanes based on game type and difficulty
@@ -124,17 +124,31 @@ export const RaceGame = ({
     onComplete,
   ]);
 
+  // Get game type display name
+  const getGameTypeName = (): string => {
+    switch (gameType) {
+      case 'multiplication':
+        return 'Multiplication';
+      case 'division':
+        return 'Division';
+      case 'addition':
+        return 'Addition';
+      case 'subtraction':
+        return 'Subtraction';
+      default:
+        return 'Math';
+    }
+  };
+
   return (
     <div
       className={`race-game-container flex flex-col h-screen ${className}`}
       role="main"
-      aria-label={`${gameType === 'multiplication' ? 'Multiplication' : 'Division'} Race Game`}
+      aria-label={`${getGameTypeName()} Race Game`}
     >
       {/* Header - Fixed at top */}
       <div className="flex-shrink-0 text-center py-4 px-6 border-b border-background-warm">
-        <h1 className="text-3xl font-bold text-text-primary mb-2">
-          {gameType === 'multiplication' ? 'Multiplication' : 'Division'} Race
-        </h1>
+        <h1 className="text-3xl font-bold text-text-primary mb-2">{getGameTypeName()} Race</h1>
         <p className="text-text-secondary">
           Answer questions to move your bikes across the finish line!
         </p>
@@ -190,9 +204,9 @@ export const RaceGame = ({
       {/* Screen reader instructions */}
       <div className="sr-only">
         <p>
-          This is the {gameType === 'multiplication' ? 'Multiplication' : 'Division'} Race game.
-          Answer math questions correctly to advance bikes across the finish line. Each correct
-          answer moves a bike one step forward. Complete all lanes to win!
+          This is the {getGameTypeName()} Race game. Answer math questions correctly to advance
+          bikes across the finish line. Each correct answer moves a bike one step forward. Complete
+          all lanes to win!
         </p>
       </div>
     </div>

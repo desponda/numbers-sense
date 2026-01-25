@@ -13,7 +13,7 @@ export interface QuestionDrawerProps {
   /** Callback when an answer is selected */
   onAnswer: (selectedIndex: number) => void;
   /** Game type (to show correct symbol in lane header) */
-  gameType?: 'multiplication' | 'division';
+  gameType?: 'multiplication' | 'division' | 'addition' | 'subtraction';
   /** Currently selected answer index (null if none selected) */
   selectedIndex?: number | null;
   /** Whether the drawer is disabled (e.g., while processing answer) */
@@ -78,7 +78,23 @@ export const QuestionDrawer = ({
     if (gameType === 'multiplication') {
       return '×';
     }
-    return question.fact.includes('÷') ? '÷' : '×';
+    if (gameType === 'addition') {
+      return '+';
+    }
+    if (gameType === 'subtraction') {
+      return '-';
+    }
+    // Fallback: infer from question fact
+    if (question.fact.includes('÷')) {
+      return '÷';
+    }
+    if (question.fact.includes('+')) {
+      return '+';
+    }
+    if (question.fact.includes('-')) {
+      return '-';
+    }
+    return '×';
   };
   const laneSymbol = getLaneSymbol();
 

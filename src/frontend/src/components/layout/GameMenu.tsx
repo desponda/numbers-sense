@@ -2,7 +2,13 @@ import type { JSX } from 'react';
 
 import { Card, Icon } from '../ui';
 
-export type GameType = 'build-number' | 'sort-numbers' | 'multiplication-race' | 'division-race';
+export type GameType =
+  | 'build-number'
+  | 'sort-numbers'
+  | 'multiplication-race'
+  | 'division-race'
+  | 'addition-race'
+  | 'subtraction-race';
 
 export interface GameMenuProps {
   /** Handler when a game is selected */
@@ -132,6 +138,26 @@ export const GameMenu = ({ onSelectGame }: GameMenuProps): JSX.Element => {
           iconColor="#E89B9B"
           onClick={() => {
             onSelectGame('division-race');
+          }}
+        />
+
+        <GameCard
+          title="Addition Race"
+          description="Race to master addition!"
+          iconText="+🚴"
+          iconColor="#7BC793"
+          onClick={() => {
+            onSelectGame('addition-race');
+          }}
+        />
+
+        <GameCard
+          title="Subtraction Race"
+          description="Race to master subtraction!"
+          iconText="-🚴"
+          iconColor="#F09D81"
+          onClick={() => {
+            onSelectGame('subtraction-race');
           }}
         />
       </div>

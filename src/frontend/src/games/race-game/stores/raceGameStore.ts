@@ -37,9 +37,20 @@ const initializeLanes = (gameType: GameType, difficulty: Difficulty): LaneState[
   const startLane = gameType === 'division' ? 1 : 0;
   const laneCount = gameType === 'division' ? config.laneCount - 1 : config.laneCount;
 
+  // Get operation symbol
+  let symbol: string;
+  if (gameType === 'multiplication') {
+    symbol = '×';
+  } else if (gameType === 'division') {
+    symbol = '÷';
+  } else if (gameType === 'addition') {
+    symbol = '+';
+  } else {
+    symbol = '-';
+  }
+
   for (let i = 0; i < laneCount; i += 1) {
     const laneNumber = startLane + i;
-    const symbol = gameType === 'multiplication' ? '×' : '÷';
 
     lanes.push({
       laneNumber,
