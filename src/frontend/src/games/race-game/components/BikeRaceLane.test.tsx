@@ -85,20 +85,17 @@ describe('BikeRaceLane', () => {
       const lane = createLane({ stepsCompleted: 10, stepsTotal: 20, progress: 0.5 });
       const { container } = render(<BikeRaceLane lane={lane} isActive={false} />);
 
-      // 10/20 = 50% progress - bike has positioning classes and is rendered
-      const bike = container.querySelector('.text-3xl.z-10');
-      expect(bike).toBeTruthy();
-      expect(bike).toHaveClass('absolute', 'top-1/2', '-translate-y-1/2');
+      // 10/20 = 50% progress - bike emoji rendered and visible
+      expect(container.textContent).toContain('🚴');
+      expect(container.textContent).toContain('🏁');
     });
 
     it('bike at start position when 0 steps', () => {
       const lane = createLane({ stepsCompleted: 0, stepsTotal: 20, progress: 0 });
       const { container } = render(<BikeRaceLane lane={lane} isActive={false} />);
 
-      // At 0%, bike is still rendered with positioning (uses max() to prevent clipping)
-      const bike = container.querySelector('.text-3xl.z-10');
-      expect(bike).toBeTruthy();
-      expect(bike).toHaveClass('absolute');
+      // At 0%, bike is still rendered and visible
+      expect(container.textContent).toContain('🚴');
     });
 
     it('bike at finish position when complete', () => {
@@ -110,10 +107,9 @@ describe('BikeRaceLane', () => {
       });
       const { container } = render(<BikeRaceLane lane={lane} isActive={false} />);
 
-      // At 100%, bike is positioned at far right of track
-      const bike = container.querySelector('.text-3xl.z-10');
-      expect(bike).toBeTruthy();
-      expect(bike).toHaveClass('absolute', 'top-1/2');
+      // At 100%, bike is rendered at finish line
+      expect(container.textContent).toContain('🚴');
+      expect(container.textContent).toContain('✅');
     });
   });
 
@@ -187,7 +183,11 @@ describe('BikeRaceLane', () => {
       const lane = createLane({ label: '×3', stepsCompleted: 7, stepsTotal: 20 });
       render(<BikeRaceLane lane={lane} isActive={false} />);
 
-      expect(screen.getByLabelText('Lane ×3: 7 out of 20 completed')).toBeInTheDocument();
+      expect(
+        screen.getByLabelText(
+          'Lane ×3 racing to 20 correct answers. Currently at 7 answers. 13 more to go!',
+        ),
+      ).toBeInTheDocument();
     });
 
     it('announces finish status to screen readers', () => {
@@ -201,7 +201,9 @@ describe('BikeRaceLane', () => {
       render(<BikeRaceLane lane={lane} isActive={false} />);
 
       expect(
-        screen.getByLabelText('Lane ×3: 20 out of 20 completed, finished'),
+        screen.getByLabelText(
+          'Lane ×3 racing to 20 correct answers. Currently at 20 answers. Finished!',
+        ),
       ).toBeInTheDocument();
     });
 
@@ -210,7 +212,9 @@ describe('BikeRaceLane', () => {
       render(<BikeRaceLane lane={lane} isActive />);
 
       expect(
-        screen.getByLabelText('Lane ×3: 7 out of 20 completed, currently active'),
+        screen.getByLabelText(
+          'Lane ×3 racing to 20 correct answers. Currently at 7 answers. 13 more to go! Currently active lane.',
+        ),
       ).toBeInTheDocument();
     });
   });

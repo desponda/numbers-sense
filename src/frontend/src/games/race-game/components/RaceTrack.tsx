@@ -56,7 +56,8 @@ export const RaceTrack = ({
   return (
     <div
       className={`
-        w-full max-w-4xl mx-auto space-y-3
+        w-full max-w-4xl mx-auto
+        space-y-3 md:space-y-4
         ${className}
       `}
       role="group"
