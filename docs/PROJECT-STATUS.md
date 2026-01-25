@@ -82,6 +82,54 @@ A playful, modern, clean, joyful math app that builds number sense (not memoriza
 - Order and magnitude comparison
 - Mental number line formation
 
+### Game 3: Multiplication Race
+
+**Concept:** Answer multiplication facts to advance bikes across finish lines. Multiple lanes (×0 to ×10) race simultaneously.
+
+| Difficulty | Facts Range    | Status      |
+| ---------- | -------------- | ----------- |
+| Easy       | ×0, ×1, ×2, ×5 | ✅ COMPLETE |
+| Medium     | ×3, ×4, ×6, ×9 | ✅ COMPLETE |
+| Hard       | All facts      | ✅ COMPLETE |
+
+**Features:**
+
+- Multiple choice questions (4 options)
+- Smart distractor generation
+- Progress tracking per lane
+- Adaptive question drawer (mobile: bottom, desktop: right sidebar)
+- Lane indicator showing which fact family is active
+
+**Learning Objectives:**
+
+- Multiplication fact fluency
+- Pattern recognition
+- Speed and accuracy
+
+### Game 4: Division Race
+
+**Concept:** Answer division facts to advance bikes across finish lines. Multiple lanes (÷1 to ÷10) race simultaneously.
+
+| Difficulty | Facts Range    | Status      |
+| ---------- | -------------- | ----------- |
+| Easy       | ÷1, ÷2, ÷5     | ✅ COMPLETE |
+| Medium     | ÷3, ÷4, ÷6, ÷9 | ✅ COMPLETE |
+| Hard       | All facts      | ✅ COMPLETE |
+
+**Features:**
+
+- Multiple choice questions (4 options)
+- Smart distractor generation
+- Progress tracking per lane
+- Adaptive question drawer (mobile: bottom, desktop: right sidebar)
+- Lane indicator showing which fact family is active
+
+**Learning Objectives:**
+
+- Division fact fluency
+- Inverse relationship with multiplication
+- Speed and accuracy
+
 ---
 
 ## Technical Stack (DECIDED)
@@ -97,7 +145,7 @@ A playful, modern, clean, joyful math app that builds number sense (not memoriza
 | Backend            | Hono + Node.js 20              | Serverless-ready, fast           |
 | Database           | PostgreSQL (Vercel)            | Relational, ACID compliant       |
 | ORM                | Drizzle                        | Type-safe, bundle-efficient      |
-| Testing            | Vitest + Playwright            | 149 unit tests + 46 E2E tests    |
+| Testing            | Vitest + Playwright            | 320 unit tests + 52 E2E tests    |
 | Hosting            | Vercel                         | Serverless, global CDN           |
 
 ---
@@ -121,6 +169,53 @@ A playful, modern, clean, joyful math app that builds number sense (not memoriza
 - [x] Architecture blueprint with justified technology choices
 - [x] AI coding guidelines with enforcement checklists
 - [x] Game mechanics with implementable specifications
+
+---
+
+## UX Validation Process
+
+**Created:** January 2026 (response to race game modal issue)
+**Document:** `/docs/UX-VALIDATION-PROCESS.md`
+
+### Mandatory Steps
+
+**Before Coding:**
+- Create visual mockup (ASCII art or design)
+- Validate against `/docs/research/ux-principles.md`
+- Get user approval
+
+**During Implementation:**
+- Screenshot every major state
+- Visual comparison to mockup
+- Run dev server and manually test
+
+**Before Merge:**
+- Component tests (no `.skip` files)
+- E2E tests with screenshot validation
+- Expert UX review
+- Accessibility audit
+
+### New Agents
+
+- **Visual Design Agent** - Creates mockups before coding
+- **UX Validator Agent** - Reviews implementations against research docs
+
+### Enforcement
+
+- Pre-commit hooks: lint, typecheck, format, tests
+- Pre-push hooks: build, full test suite
+- PR template requires screenshots
+- Weekly UX audits
+
+### Lessons Learned
+
+The race game modal issue (question obscuring race track) reached production because:
+- No visual design phase before coding
+- No screenshot validation during development
+- Tests were skipped (`.skip` files)
+- Didn't enforce our own UX research docs
+
+**This process ensures it never happens again.**
 
 ---
 
@@ -188,6 +283,8 @@ See `/docs/SPRINT-PLAN.md` for detailed breakdown.
 - [x] Game engine core
 - [x] Build the Number game (Easy Mode)
 - [x] Sort the Numbers game (All phases)
+- [x] Multiplication Race game (All difficulties)
+- [x] Division Race game (All difficulties)
 - [x] App shell and navigation
 - [x] Feedback components (celebrations, hints)
 - [x] Base-10 block components
@@ -195,8 +292,9 @@ See `/docs/SPRINT-PLAN.md` for detailed breakdown.
 - [x] Docker containerization
 - [x] Kubernetes/Helm deployment
 - [x] CI/CD pipeline (GitHub Actions)
-- [x] Comprehensive test suite (149 unit tests + 46 E2E tests)
+- [x] Comprehensive test suite (320 unit tests + 52 E2E tests)
 - [x] Audio feedback system
+- [x] UX validation process (prevention system)
 - [ ] Backend API (deferred)
 - [ ] Authentication system (deferred)
 - [ ] Parent dashboard (deferred)
@@ -213,16 +311,18 @@ See `/docs/SPRINT-PLAN.md` for detailed breakdown.
 
 ## Document Index
 
-| Document            | Path                                            | Purpose                 |
-| ------------------- | ----------------------------------------------- | ----------------------- |
-| Agent Org Chart     | `/docs/AGENT-ORG-CHART.md`                      | Team structure          |
-| Research Summary    | `/docs/RESEARCH-SUMMARY.md`                     | Key findings            |
-| Sprint Plan         | `/docs/SPRINT-PLAN.md`                          | Implementation schedule |
-| UX Principles       | `/docs/research/ux-principles.md`               | Design guidelines       |
-| Learning Science    | `/docs/research/learning-science-principles.md` | Pedagogy principles     |
-| AI Guidelines       | `/docs/research/ai-coding-guidelines.md`        | Coding practices        |
-| Technical Blueprint | `/docs/architecture/technical-blueprint.md`     | System architecture     |
-| Game Mechanics      | `/docs/specs/game-mechanics.md`                 | Game specifications     |
+| Document            | Path                                            | Purpose                      |
+| ------------------- | ----------------------------------------------- | ---------------------------- |
+| Agent Org Chart     | `/docs/AGENT-ORG-CHART.md`                      | Team structure               |
+| Research Summary    | `/docs/RESEARCH-SUMMARY.md`                     | Key findings                 |
+| Sprint Plan         | `/docs/SPRINT-PLAN.md`                          | Implementation schedule      |
+| UX Validation       | `/docs/UX-VALIDATION-PROCESS.md`                | Mandatory UX process         |
+| UX Principles       | `/docs/research/ux-principles.md`               | Design guidelines            |
+| Learning Science    | `/docs/research/learning-science-principles.md` | Pedagogy principles          |
+| AI Guidelines       | `/docs/research/ai-coding-guidelines.md`        | Coding practices             |
+| Technical Blueprint | `/docs/architecture/technical-blueprint.md`     | System architecture          |
+| Game Mechanics      | `/docs/specs/game-mechanics.md`                 | Game specifications          |
+| Race Games Spec     | `/docs/specs/multiplication-race-game.md`       | Multiplication/Division Race |
 
 ---
 
@@ -238,3 +338,4 @@ See `/docs/SPRINT-PLAN.md` for detailed breakdown.
 | 2026-01-24 | Test suite added. 149 tests across 8 files: problemGenerator (19), gameSessionStore (27), useGameAudio (8), Button (25), Card (27), blocks (16), SortTheNumbersGame (17), BuildTheNumberGame (10). |
 | 2026-01-24 | Audio feedback implemented. Synthesized sounds for all game interactions.                                                                                                                          |
 | 2026-01-24 | Playwright E2E tests passing. All 46 tests green (Chromium + Mobile Chrome). iPad tests removed to optimize test duration. Test suite now 149 unit + 46 E2E tests.                                  |
+| 2026-01-24 | Race games added. Multiplication and Division Race with adaptive question drawer. 320 unit tests + 52 E2E tests. UX validation process documented.                                                  |
