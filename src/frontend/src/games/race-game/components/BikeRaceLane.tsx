@@ -49,6 +49,7 @@ export const BikeRaceLane = ({ lane, isActive, onClick }: BikeRaceLaneProps): JS
         relative flex items-center gap-3 p-3 rounded-xl
         transition-all duration-normal
         h-16 md:h-18
+        w-full min-w-0
         ${isActive ? 'bg-yellow-100 border-2 border-yellow-400 shadow-lg shadow-yellow-200 ring-2 ring-yellow-300' : 'bg-background-cream border-2 border-background-warm'}
         ${lane.finished ? 'bg-success-50 border-success' : ''}
         ${onClick ? 'cursor-pointer hover:bg-background-warm' : ''}
@@ -76,9 +77,9 @@ export const BikeRaceLane = ({ lane, isActive, onClick }: BikeRaceLaneProps): JS
       </div>
 
       {/* Race track with thick visible line */}
-      <div className="flex-1 relative h-12 flex items-center">
+      <div className="flex-1 relative h-12 flex items-center min-w-[200px]">
         {/* Track line container */}
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1.5 md:h-2 flex items-center">
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1.5 md:h-2 flex items-center w-full">
           {/* Completed portion - thick solid line */}
           <div
             className="h-1.5 md:h-2 bg-primary-400 rounded-l-full transition-all duration-slow"
