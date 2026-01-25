@@ -75,17 +75,19 @@ export const BikeRaceLane = ({ lane, isActive, onClick }: BikeRaceLaneProps): JS
       </div>
 
       {/* Progress track */}
-      <div className="flex-1 relative h-12 bg-background-warm rounded-lg overflow-hidden border border-text-light">
-        {/* Progress bar */}
+      <div className="flex-1 relative h-12 bg-background-warm rounded-lg border border-text-light">
+        {/* Progress bar (with overflow hidden to prevent spillover) */}
         <div
-          className="absolute inset-y-0 left-0 bg-primary-200 transition-all duration-slow"
+          className="absolute inset-y-0 left-0 bg-primary-200 transition-all duration-slow rounded-lg overflow-hidden"
           style={{ width: `${String(progressPercentage)}%` }}
         />
 
-        {/* Bike icon */}
+        {/* Bike icon (min left position to prevent clipping) */}
         <div
           className="absolute top-1/2 -translate-y-1/2 text-3xl z-10 drop-shadow-md transition-all duration-slow"
-          style={{ left: `calc(${String(progressPercentage)}% - 16px)` }}
+          style={{
+            left: `max(2px, calc(${String(progressPercentage)}% - 16px))`,
+          }}
           aria-hidden="true"
         >
           🚴
@@ -93,7 +95,7 @@ export const BikeRaceLane = ({ lane, isActive, onClick }: BikeRaceLaneProps): JS
 
         {/* Finish line */}
         <div
-          className="absolute top-0 right-0 bottom-0 w-12 flex items-center justify-center text-3xl"
+          className="absolute top-0 right-0 bottom-0 w-12 flex items-center justify-center text-3xl bg-background-warm"
           aria-hidden="true"
         >
           🏁
