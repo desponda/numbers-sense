@@ -4,7 +4,7 @@ import type { JSX } from 'react';
 import { useGameAudio } from '../../hooks';
 
 import { CompletionCelebration } from './components/CompletionCelebration';
-import { QuestionModal } from './components/QuestionModal';
+import { QuestionDrawer } from './components/QuestionDrawer';
 import { RaceTrack } from './components/RaceTrack';
 import { useRaceGameStore } from './stores/raceGameStore';
 
@@ -126,12 +126,12 @@ export const RaceGame = ({
 
   return (
     <div
-      className={`race-game-container max-w-6xl mx-auto p-6 ${className}`}
+      className={`race-game-container flex flex-col h-screen ${className}`}
       role="main"
       aria-label={`${gameType === 'multiplication' ? 'Multiplication' : 'Division'} Race Game`}
     >
-      {/* Header */}
-      <div className="text-center mb-6">
+      {/* Header - Fixed at top */}
+      <div className="flex-shrink-0 text-center py-4 px-6 border-b border-background-warm">
         <h1 className="text-3xl font-bold text-text-primary mb-2">
           {gameType === 'multiplication' ? 'Multiplication' : 'Division'} Race
         </h1>
@@ -140,19 +140,32 @@ export const RaceGame = ({
         </p>
       </div>
 
-      {/* Race Track */}
-      <RaceTrack lanes={store.lanes} currentLane={store.currentLane} />
+      {/* Race Track Area - Scrollable, fills remaining space */}
+      <div
+        className={`
+          flex-1 overflow-y-auto p-6
+          transition-all duration-300
+          ${
+            store.currentQuestion !== null
+              ? 'opacity-95 pb-[40vh] md:pr-[40vw] md:pb-6'
+              : 'opacity-100 pb-6'
+          }
+        `}
+      >
+        <RaceTrack lanes={store.lanes} currentLane={store.currentLane} />
+      </div>
 
-      {/* Question Modal (when question exists) */}
+      {/* Question Drawer - Slides up from bottom (overlays race track but doesn't obscure it) */}
       {store.currentQuestion !== null && (
-        <QuestionModal
+        <QuestionDrawer
           question={store.currentQuestion}
           onAnswer={handleAnswer}
+          gameType={gameType}
           disabled={store.status === 'paused'}
         />
       )}
 
-      {/* Completion Celebration (when finished) */}
+      {/* Completion Celebration - Full overlay (this is appropriate for end state) */}
       {store.status === 'completed' && store.endTime !== null && (
         <CompletionCelebration
           stats={{
