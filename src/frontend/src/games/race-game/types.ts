@@ -95,6 +95,30 @@ export interface GameStats {
   totalFacts: number;
 }
 
+// Feedback entry for corrective feedback display
+export interface FeedbackEntry {
+  /** Unique identifier for React keys */
+  id: string;
+
+  /** Question text (e.g., "3 × 7 = ?") */
+  questionText: string;
+
+  /** Answer the user selected */
+  userAnswer: number;
+
+  /** The correct answer */
+  correctAnswer: number;
+
+  /** Whether the user's answer was correct */
+  wasCorrect: boolean;
+
+  /** Timestamp when answer was submitted */
+  timestamp: number;
+
+  /** Lane this question was for */
+  lane: number;
+}
+
 // Game status
 export type GameStatus = 'init' | 'playing' | 'paused' | 'completed';
 

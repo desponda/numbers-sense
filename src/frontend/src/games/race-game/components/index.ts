@@ -21,3 +21,6 @@ export type { QuestionDrawerProps } from './QuestionDrawer';
 
 export { CompletionCelebration } from './CompletionCelebration';
 export type { CompletionCelebrationProps } from './CompletionCelebration';
+
+export { FeedbackBanner } from './FeedbackBanner';
+export type { FeedbackBannerProps } from './FeedbackBanner';

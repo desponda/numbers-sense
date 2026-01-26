@@ -4,6 +4,7 @@ import type { JSX } from 'react';
 import { useGameAudio } from '../../hooks';
 
 import { CompletionCelebration } from './components/CompletionCelebration';
+import { FeedbackBanner } from './components/FeedbackBanner';
 import { QuestionDrawer } from './components/QuestionDrawer';
 import { RaceTrack } from './components/RaceTrack';
 import { useRaceGameStore } from './stores/raceGameStore';
@@ -177,6 +178,11 @@ export const RaceGame = ({
           gameType={gameType}
           disabled={store.status === 'paused'}
         />
+      )}
+
+      {/* Feedback Banner - Shows corrective feedback between race track and question */}
+      {store.currentFeedback && !store.currentFeedback.wasCorrect && (
+        <FeedbackBanner entry={store.currentFeedback} onDismiss={store.dismissFeedback} />
       )}
 
       {/* Completion Celebration - Full overlay (this is appropriate for end state) */}

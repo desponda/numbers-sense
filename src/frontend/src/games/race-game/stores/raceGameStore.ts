@@ -12,6 +12,7 @@ import {
   DIFFICULTY_CONFIGS,
   type Difficulty,
   type FactMastery,
+  type FeedbackEntry,
   type GameStatus,
   type GameType,
   type LaneState,
@@ -93,10 +94,14 @@ interface RaceGameState {
   // Status
   status: GameStatus;
 
+  // Feedback
+  currentFeedback: FeedbackEntry | null;
+
   // Actions
   initializeGame: (type: GameType, difficulty: Difficulty) => void;
   generateNextQuestion: () => void;
   submitAnswer: (selectedIndex: number) => void;
+  dismissFeedback: () => void;
   pauseGame: () => void;
   resumeGame: () => void;
   resetGame: () => void;
@@ -117,6 +122,7 @@ const initialState = {
   endTime: null,
   factMastery: {},
   status: 'init' as GameStatus,
+  currentFeedback: null,
 };
 
 /**
@@ -143,6 +149,7 @@ export const useRaceGameStore = create<RaceGameState>()(
           totalAttempts: 0,
           currentQuestion: null,
           currentLane: null,
+          currentFeedback: null,
         });
 
         // Generate first question
@@ -195,6 +202,7 @@ export const useRaceGameStore = create<RaceGameState>()(
         }
 
         const isCorrect = selectedIndex === currentQuestion.correctIndex;
+        const userAnswer = currentQuestion.options[selectedIndex];
 
         if (isCorrect) {
           // Mark fact as correct in mastery tracker (create copy to avoid mutation)
@@ -223,20 +231,42 @@ export const useRaceGameStore = create<RaceGameState>()(
             totalCorrect: totalCorrect + 1,
             factMastery: updatedFactMastery,
             lanes: updatedLanes,
+            currentFeedback: null, // Clear feedback on correct answer
           });
 
           // Generate next question after brief delay
-          // Note: In actual implementation, this delay would be handled by the component
-          // using setTimeout before calling generateNextQuestion
           setTimeout(() => {
             get().generateNextQuestion();
           }, 500);
         } else {
-          // Incorrect answer - increment attempts only, keep same question
+          // Incorrect answer - create feedback entry and move to next question
+          const feedbackEntry: FeedbackEntry = {
+            id: `${String(Date.now())}-${String(currentQuestion.lane)}`,
+            questionText: currentQuestion.questionText,
+            userAnswer: userAnswer ?? 0,
+            correctAnswer: currentQuestion.correctAnswer,
+            wasCorrect: false,
+            timestamp: Date.now(),
+            lane: currentQuestion.lane,
+          };
+
           set({
             totalAttempts: totalAttempts + 1,
+            currentFeedback: feedbackEntry,
           });
+
+          // Move to next question after brief delay (no retry)
+          setTimeout(() => {
+            get().generateNextQuestion();
+          }, 500);
         }
+      },
+
+      /**
+       * Dismiss current feedback
+       */
+      dismissFeedback: (): void => {
+        set({ currentFeedback: null });
       },
 
       /**
