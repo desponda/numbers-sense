@@ -120,21 +120,23 @@ export interface DifficultyConfig {
 }
 
 // Difficulty configurations
+// Updated based on educational research for K-3 attention spans and optimal session length
+// Easy: 50 questions (5-8 min) for K-1, Medium: 80 questions (8-12 min) for Grade 2, Hard: 120 questions (12-15 min) for Grade 3
 export const DIFFICULTY_CONFIGS: Record<Difficulty, DifficultyConfig> = {
   easy: {
     difficulty: 'easy',
-    laneCount: 6,
-    startLane: 0, // Will be adjusted for division (1-5 or 1-6)
-    endLane: 6,
-    stepsPerLane: 15,
+    laneCount: 5,
+    startLane: 0, // Will be adjusted for division (1-5)
+    endLane: 5,
+    stepsPerLane: 10,
     masteryThreshold: 2,
   },
   medium: {
     difficulty: 'medium',
-    laneCount: 10,
-    startLane: 0, // Will be adjusted for division (1-9 or 1-10)
-    endLane: 10,
-    stepsPerLane: 20,
+    laneCount: 8,
+    startLane: 0, // Will be adjusted for division (1-8)
+    endLane: 8,
+    stepsPerLane: 10,
     masteryThreshold: 2,
   },
   hard: {
@@ -142,7 +144,7 @@ export const DIFFICULTY_CONFIGS: Record<Difficulty, DifficultyConfig> = {
     laneCount: 10,
     startLane: 0,
     endLane: 10,
-    stepsPerLane: 30,
+    stepsPerLane: 12,
     masteryThreshold: 3,
   },
 };
