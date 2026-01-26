@@ -103,7 +103,7 @@ export const CompletionCelebration = ({
             {/* Accuracy */}
             <div className="bg-success-50 rounded-xl p-6 text-center">
               <div className="text-5xl font-extrabold text-success mb-2">
-                {Math.round(stats.accuracy)}%
+                {Math.round(stats.accuracy * 100)}%
               </div>
               <div className="text-lg font-semibold text-text-secondary">Accuracy</div>
             </div>
@@ -111,7 +111,7 @@ export const CompletionCelebration = ({
             {/* Time */}
             <div className="bg-primary-50 rounded-xl p-6 text-center">
               <div className="text-5xl font-extrabold text-primary mb-2">
-                {formatTime(stats.timeElapsed)}
+                {formatTime(stats.timeElapsed / 1000)}
               </div>
               <div className="text-lg font-semibold text-text-secondary">Time</div>
             </div>
