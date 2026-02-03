@@ -94,18 +94,18 @@ describe('AnswerInput', () => {
         <AnswerInput value={null} onChange={mockOnChange} onSubmit={mockOnSubmit} />,
       );
 
-      let input = screen.getByLabelText(/answer input/i);
+      let input = screen.getByLabelText(/answer input/i) as HTMLInputElement;
       expect(input.value).toBe('');
 
       rerender(<AnswerInput value={7} onChange={mockOnChange} onSubmit={mockOnSubmit} />);
-      input = screen.getByLabelText(/answer input/i);
+      input = screen.getByLabelText(/answer input/i) as HTMLInputElement;
       expect(input.value).toBe('7');
     });
 
     it('shows placeholder when value is null', () => {
       render(<AnswerInput value={null} onChange={mockOnChange} onSubmit={mockOnSubmit} />);
 
-      const input = screen.getByLabelText(/answer input/i);
+      const input = screen.getByLabelText(/answer input/i) as HTMLInputElement;
       expect(input.placeholder).toBe('?');
     });
   });
@@ -348,7 +348,7 @@ describe('AnswerInput', () => {
     it('handles value of 0', () => {
       render(<AnswerInput value={0} onChange={mockOnChange} onSubmit={mockOnSubmit} />);
 
-      const input = screen.getByLabelText(/answer input/i);
+      const input = screen.getByLabelText(/answer input/i) as HTMLInputElement;
       expect(input.value).toBe('0');
     });
 
