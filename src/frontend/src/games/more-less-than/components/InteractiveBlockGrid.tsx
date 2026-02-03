@@ -35,8 +35,7 @@ export const InteractiveBlockGrid = ({
   onComplete,
   onSkip,
 }: InteractiveBlockGridProps): JSX.Element => {
-  // For "less": tracks indices of blocks marked for removal
-  // For "more": tracks indices of new blocks that have been added
+  // Track which blocks are selected by their indices
   const [selectedIndices, setSelectedIndices] = useState<Set<number>>(new Set());
 
   // For "less" operation: decompose starting number
@@ -46,19 +45,40 @@ export const InteractiveBlockGrid = ({
   const tens = Math.floor(totalBlocksToShow / 10);
   const units = totalBlocksToShow % 10;
 
+  // Helper to get the value of a block by its index
+  const getBlockValue = (index: number): number => {
+    if (index < tens) {
+      return 10; // Ten rod
+    }
+    return 1; // Unit cube
+  };
+
+  // Calculate total VALUE of selected blocks (not count!)
+  const selectedValue = Array.from(selectedIndices).reduce((sum, index) => {
+    return sum + getBlockValue(index);
+  }, 0);
+
   const toggleBlock = (index: number): void => {
+    const blockValue = getBlockValue(index);
     const newSelected = new Set(selectedIndices);
+
     if (newSelected.has(index)) {
+      // Deselect
       newSelected.delete(index);
-    } else if (newSelected.size < targetRemovalCount) {
-      // Only allow selecting up to target count
-      newSelected.add(index);
+    } else {
+      // Check if adding this block would exceed target VALUE
+      const currentValue = Array.from(newSelected).reduce((sum, idx) => {
+        return sum + getBlockValue(idx);
+      }, 0);
+      if (currentValue + blockValue <= targetRemovalCount) {
+        newSelected.add(index);
+      }
     }
     setSelectedIndices(newSelected);
   };
 
   const handleDone = (): void => {
-    if (selectedIndices.size === targetRemovalCount) {
+    if (selectedValue === targetRemovalCount) {
       // Calculate resulting number
       const result =
         operation === 'less'
@@ -68,20 +88,19 @@ export const InteractiveBlockGrid = ({
     }
   };
 
-  const isCorrectCount = selectedIndices.size === targetRemovalCount;
-  const currentCount = selectedIndices.size;
+  const isCorrectValue = selectedValue === targetRemovalCount;
 
-  // Calculate current number of blocks based on operation
+  // Calculate current number based on selected VALUE
   const currentBlockCount =
     operation === 'less'
-      ? startingNumber - currentCount // Removing blocks
-      : startingNumber + currentCount; // Adding blocks
+      ? startingNumber - selectedValue // Removing VALUE
+      : startingNumber + selectedValue; // Adding VALUE
 
-  const blockPlural = targetRemovalCount > 1 ? 's' : '';
+  // Instruction text - NO "blocks" word, just the number
   const instructionText =
     operation === 'less'
-      ? `Take away ${String(targetRemovalCount)} block${blockPlural}`
-      : `Add ${String(targetRemovalCount)} block${blockPlural}`;
+      ? `Take away ${String(targetRemovalCount)}`
+      : `Add ${String(targetRemovalCount)}`;
 
   // Helper to determine if a block is part of the starting set or a new block to be added
   const isNewBlock = (index: number): boolean => {
@@ -103,21 +122,21 @@ export const InteractiveBlockGrid = ({
         <div className="text-lg text-gray-600">current blocks</div>
       </div>
 
-      {/* Progress Counter */}
+      {/* Progress Counter - Shows VALUE not block count */}
       <div
         className={`text-xl font-bold ${((): string => {
-          if (isCorrectCount) {
+          if (isCorrectValue) {
             return 'text-green-600';
           }
-          if (currentCount > targetRemovalCount) {
+          if (selectedValue > targetRemovalCount) {
             return 'text-red-500';
           }
           return 'text-gray-600';
         })()}`}
       >
-        {String(currentCount)} of {String(targetRemovalCount)}{' '}
-        {operation === 'less' ? 'removed' : 'added'}
-        {isCorrectCount && ' ✓'}
+        {String(selectedValue)} of {String(targetRemovalCount)}{' '}
+        {operation === 'less' ? 'taken away' : 'added'}
+        {isCorrectValue && ' ✓'}
       </div>
 
       {/* Block Grid */}
@@ -126,6 +145,10 @@ export const InteractiveBlockGrid = ({
         {Array.from({ length: tens }).map((_, index) => {
           const isSelected = selectedIndices.has(index);
           const isNew = isNewBlock(index);
+          const blockValue = getBlockValue(index);
+
+          // Check if selecting this block would exceed target
+          const wouldExceedTarget = !isSelected && selectedValue + blockValue > targetRemovalCount;
 
           // For "more" operation: new blocks start as outlines and become solid when selected
           // For "less" operation: all blocks start solid and become marked when selected
@@ -141,16 +164,21 @@ export const InteractiveBlockGrid = ({
                 if (operation === 'more' && !isNew) {
                   return; // Can't select original blocks in add mode
                 }
+                if (wouldExceedTarget) {
+                  return; // Would exceed target value
+                }
                 toggleBlock(index);
               }}
+              disabled={wouldExceedTarget}
               className={`
                 relative transition-all duration-200
                 min-w-[64px] min-h-[64px]
                 ${shouldShowOutline ? 'opacity-30 border-2 border-dashed border-gray-400' : ''}
                 ${shouldShowStrikethrough ? 'opacity-40 scale-95' : 'opacity-100 hover:opacity-80 scale-100'}
-                ${operation === 'more' && !isNew ? 'cursor-default' : 'cursor-pointer'}
+                ${operation === 'more' && !isNew ? 'cursor-default opacity-100' : ''}
+                ${wouldExceedTarget ? 'opacity-20 cursor-not-allowed' : ''}
               `}
-              aria-label={`Ten rod ${String(index + 1)}, ${isSelected ? 'selected' : 'not selected'}${isNew ? ', new block' : ''}`}
+              aria-label={`Ten rod ${String(index + 1)}, value 10, ${isSelected ? 'selected' : 'not selected'}${isNew ? ', new block' : ''}${wouldExceedTarget ? ', would exceed target' : ''}`}
             >
               <TenRod
                 id={`ten-${String(index)}`}
@@ -177,6 +205,10 @@ export const InteractiveBlockGrid = ({
           const blockIndex = tens + index;
           const isSelected = selectedIndices.has(blockIndex);
           const isNew = isNewBlock(blockIndex);
+          const blockValue = getBlockValue(blockIndex);
+
+          // Check if selecting this block would exceed target
+          const wouldExceedTarget = !isSelected && selectedValue + blockValue > targetRemovalCount;
 
           const shouldShowOutline = operation === 'more' && isNew && !isSelected;
           const shouldShowStrikethrough = operation === 'less' && isSelected;
@@ -190,16 +222,21 @@ export const InteractiveBlockGrid = ({
                 if (operation === 'more' && !isNew) {
                   return; // Can't select original blocks in add mode
                 }
+                if (wouldExceedTarget) {
+                  return; // Would exceed target value
+                }
                 toggleBlock(blockIndex);
               }}
+              disabled={wouldExceedTarget}
               className={`
                 relative transition-all duration-200
                 min-w-[64px] min-h-[64px]
                 ${shouldShowOutline ? 'opacity-30 border-2 border-dashed border-gray-400 rounded-lg' : ''}
                 ${shouldShowStrikethrough ? 'opacity-40 scale-95' : 'opacity-100 hover:opacity-80 scale-100'}
-                ${operation === 'more' && !isNew ? 'cursor-default' : 'cursor-pointer'}
+                ${operation === 'more' && !isNew ? 'cursor-default opacity-100' : ''}
+                ${wouldExceedTarget ? 'opacity-20 cursor-not-allowed' : ''}
               `}
-              aria-label={`Unit cube ${String(index + 1)}, ${isSelected ? 'selected' : 'not selected'}${isNew ? ', new block' : ''}`}
+              aria-label={`Unit cube ${String(index + 1)}, value 1, ${isSelected ? 'selected' : 'not selected'}${isNew ? ', new block' : ''}${wouldExceedTarget ? ', would exceed target' : ''}`}
             >
               <UnitCube
                 id={`unit-${String(blockIndex)}`}
@@ -227,19 +264,19 @@ export const InteractiveBlockGrid = ({
         <button
           type="button"
           onClick={handleDone}
-          disabled={!isCorrectCount}
+          disabled={!isCorrectValue}
           className={`
             px-8 py-4 min-h-[64px] min-w-[200px]
             text-xl font-bold rounded-xl
             transition-all duration-200
             ${
-              isCorrectCount
+              isCorrectValue
                 ? 'bg-green-500 hover:bg-green-600 text-white cursor-pointer'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }
           `}
         >
-          Done {operation === 'less' ? 'Removing' : 'Adding'} ✓
+          Done {operation === 'less' ? 'Taking Away' : 'Adding'} ✓
         </button>
 
         {onSkip && (
@@ -259,9 +296,14 @@ export const InteractiveBlockGrid = ({
       </div>
 
       {/* Help text */}
-      {currentCount > targetRemovalCount && (
+      {selectedValue > targetRemovalCount && (
         <p className="text-orange-500 font-medium">
-          That&apos;s too many! Tap blocks again to unselect them.
+          That&apos;s too much! Tap blocks again to unselect them.
+        </p>
+      )}
+      {selectedValue > 0 && selectedValue < targetRemovalCount && (
+        <p className="text-blue-500 font-medium">
+          Keep going! You need {String(targetRemovalCount - selectedValue)} more.
         </p>
       )}
     </div>

@@ -68,7 +68,9 @@ export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps):
 
     setCurrentProblem(problem);
     setProblem(problem);
-    setPhase(usesInteraction ? 'interacting' : 'answering');
+    // Only use interaction for "less" (take away) operations
+    const shouldInteract = usesInteraction && problem.operation === 'less';
+    setPhase(shouldInteract ? 'interacting' : 'answering');
   }, [difficulty, setProblem, usesInteraction]);
 
   // Reset state for new problem
@@ -80,7 +82,9 @@ export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps):
 
     setCurrentProblem(nextProblem);
     setProblem(nextProblem);
-    setPhase(usesInteraction ? 'interacting' : 'answering');
+    // Only use interaction for "less" (take away) operations
+    const shouldInteract = usesInteraction && nextProblem.operation === 'less';
+    setPhase(shouldInteract ? 'interacting' : 'answering');
     setAnswerValue(null);
     setAttemptCount(0);
     setFeedback(null);
