@@ -166,8 +166,8 @@ export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps):
       {/* Problem Display */}
       <ProblemDisplay problem={currentProblem} />
 
-      {/* Visual Scaffold - Only show for Easy mode, always visible */}
-      {difficulty === 'easy' && (
+      {/* Visual Scaffold - Show for Easy (always) and Medium (peek) modes */}
+      {(difficulty === 'easy' || difficulty === 'medium') && (
         <VisualScaffold
           startingNumber={currentProblem.startingNumber}
           operation={currentProblem.operation}

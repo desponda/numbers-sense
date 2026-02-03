@@ -94,10 +94,12 @@ describe('AnswerInput', () => {
         <AnswerInput value={null} onChange={mockOnChange} onSubmit={mockOnSubmit} />,
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       let input = screen.getByLabelText(/answer input/i) as HTMLInputElement;
       expect(input.value).toBe('');
 
       rerender(<AnswerInput value={7} onChange={mockOnChange} onSubmit={mockOnSubmit} />);
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       input = screen.getByLabelText(/answer input/i) as HTMLInputElement;
       expect(input.value).toBe('7');
     });
@@ -105,6 +107,7 @@ describe('AnswerInput', () => {
     it('shows placeholder when value is null', () => {
       render(<AnswerInput value={null} onChange={mockOnChange} onSubmit={mockOnSubmit} />);
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       const input = screen.getByLabelText(/answer input/i) as HTMLInputElement;
       expect(input.placeholder).toBe('?');
     });
@@ -348,6 +351,7 @@ describe('AnswerInput', () => {
     it('handles value of 0', () => {
       render(<AnswerInput value={0} onChange={mockOnChange} onSubmit={mockOnSubmit} />);
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       const input = screen.getByLabelText(/answer input/i) as HTMLInputElement;
       expect(input.value).toBe('0');
     });

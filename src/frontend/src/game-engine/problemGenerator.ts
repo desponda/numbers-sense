@@ -181,12 +181,12 @@ const generateMoreLessThanProblem = (options: GeneratorOptions): Problem => {
   const { difficulty } = options;
   const config = DIFFICULTY_CONFIGS[difficulty];
 
-  // Define delta ranges per difficulty
+  // Define delta ranges per difficulty (max 5 based on user feedback)
   const deltaRanges: Record<DifficultyMode, number[]> = {
     easy: [1, 2],
-    medium: [1, 2, 3, 5, 10],
-    hard: [1, 2, 3, 4, 5, 10, 20],
-    challenge: [5, 10, 15, 20, 25],
+    medium: [1, 2, 3, 4, 5],
+    hard: [1, 2, 3, 4, 5],
+    challenge: [1, 2, 3, 4, 5],
   };
 
   // Select operation (50/50 more vs less)
