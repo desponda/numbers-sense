@@ -30,7 +30,7 @@ describe('problemGenerator', () => {
       });
       expect(problem.id).toMatch(/^problem-\d+-[a-z0-9]+$/);
       expect(problem.targetValue).toBeGreaterThanOrEqual(1);
-      expect(problem.targetValue).toBeLessThanOrEqual(10);
+      expect(problem.targetValue).toBeLessThanOrEqual(20); // Easy: 1-20
       expect(problem.createdAt).toBeGreaterThan(0);
     });
 
@@ -56,7 +56,7 @@ describe('problemGenerator', () => {
           difficulty: 'easy',
         });
         expect(problem.targetValue).toBeGreaterThanOrEqual(1);
-        expect(problem.targetValue).toBeLessThanOrEqual(10);
+        expect(problem.targetValue).toBeLessThanOrEqual(20); // Easy: 1-20
       }
     });
 
@@ -68,8 +68,8 @@ describe('problemGenerator', () => {
           gameId: 'build-the-number',
           difficulty: 'medium',
         });
-        expect(problem.targetValue).toBeGreaterThanOrEqual(1);
-        expect(problem.targetValue).toBeLessThanOrEqual(20);
+        expect(problem.targetValue).toBeGreaterThanOrEqual(10); // Medium: 10-50
+        expect(problem.targetValue).toBeLessThanOrEqual(50);
       }
     });
 
@@ -220,13 +220,13 @@ describe('problemGenerator', () => {
         });
 
         if (problem.gameId === 'more-less-than') {
-          // Easy: 1-10 range, delta 1-2
+          // Easy: 1-20 range, delta 1-2
           expect(problem.startingNumber).toBeGreaterThanOrEqual(1);
-          expect(problem.startingNumber).toBeLessThanOrEqual(10);
+          expect(problem.startingNumber).toBeLessThanOrEqual(20);
           expect(problem.delta).toBeGreaterThanOrEqual(1);
           expect(problem.delta).toBeLessThanOrEqual(2);
           expect(problem.targetValue).toBeGreaterThanOrEqual(0);
-          expect(problem.targetValue).toBeLessThanOrEqual(10);
+          expect(problem.targetValue).toBeLessThanOrEqual(22); // Max 20 + delta 2
 
           // Verify calculation
           const expected =
@@ -265,12 +265,12 @@ describe('problemGenerator', () => {
         });
 
         if (problem.gameId === 'more-less-than') {
-          // Medium: 1-20 range, delta 1,2,3,5,10
-          expect(problem.startingNumber).toBeGreaterThanOrEqual(1);
-          expect(problem.startingNumber).toBeLessThanOrEqual(20);
-          expect([1, 2, 3, 5, 10]).toContain(problem.delta);
-          expect(problem.targetValue).toBeGreaterThanOrEqual(0);
-          expect(problem.targetValue).toBeLessThanOrEqual(20);
+          // Medium: 10-50 range, delta 1,2,3,4,5
+          expect(problem.startingNumber).toBeGreaterThanOrEqual(10);
+          expect(problem.startingNumber).toBeLessThanOrEqual(50);
+          expect([1, 2, 3, 4, 5]).toContain(problem.delta);
+          expect(problem.targetValue).toBeGreaterThanOrEqual(5); // Min 10 - delta 5
+          expect(problem.targetValue).toBeLessThanOrEqual(55); // Max 50 + delta 5
         }
       }
     });
@@ -305,12 +305,12 @@ describe('problemGenerator', () => {
         });
 
         if (problem.gameId === 'more-less-than') {
-          // Challenge: 1-100 range, delta 5,10,15,20,25
-          expect(problem.startingNumber).toBeGreaterThanOrEqual(1);
+          // Challenge: 50-100 range, delta 1,2,3,4,5
+          expect(problem.startingNumber).toBeGreaterThanOrEqual(50);
           expect(problem.startingNumber).toBeLessThanOrEqual(100);
-          expect([5, 10, 15, 20, 25]).toContain(problem.delta);
-          expect(problem.targetValue).toBeGreaterThanOrEqual(0);
-          expect(problem.targetValue).toBeLessThanOrEqual(100);
+          expect([1, 2, 3, 4, 5]).toContain(problem.delta);
+          expect(problem.targetValue).toBeGreaterThanOrEqual(45); // Min 50 - delta 5
+          expect(problem.targetValue).toBeLessThanOrEqual(105); // Max 100 + delta 5
         }
       }
     });
@@ -396,11 +396,11 @@ describe('problemGenerator', () => {
     it('respects difficulty range', () => {
       vi.spyOn(Math, 'random').mockRestore();
 
-      // Easy: 1-10
+      // Easy: 1-20 (updated range)
       const easyValues = generateSortTheNumbersValues('easy', 3);
       easyValues.forEach((v) => {
         expect(v).toBeGreaterThanOrEqual(1);
-        expect(v).toBeLessThanOrEqual(10);
+        expect(v).toBeLessThanOrEqual(20);
       });
 
       // Hard: 1-100

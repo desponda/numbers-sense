@@ -135,8 +135,8 @@ describe('ProblemDisplay', () => {
       const problem = createMockProblem('more', 3, 5);
       const { container } = render(<ProblemDisplay problem={problem} />);
 
-      // Check for highlighted span (should have text-coral-500 class)
-      const highlightedSpan = container.querySelector('.text-coral-500');
+      // Check for highlighted span (should have text-orange-500 class)
+      const highlightedSpan = container.querySelector('.text-orange-500');
       expect(highlightedSpan).toBeInTheDocument();
       expect(highlightedSpan).toHaveClass('font-bold', 'underline');
     });
