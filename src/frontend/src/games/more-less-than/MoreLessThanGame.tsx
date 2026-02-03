@@ -6,6 +6,7 @@ import { useGameSessionStore } from '../../game-engine/stores/gameSessionStore';
 
 import { AnswerInput } from './components/AnswerInput';
 import { FeedbackDisplay } from './components/FeedbackDisplay';
+import { PeekButton } from './components/PeekButton';
 import { ProblemDisplay } from './components/ProblemDisplay';
 import { VisualScaffold } from './components/VisualScaffold';
 import { validateAnswer } from './utils/validation';
@@ -48,6 +49,10 @@ export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps):
   const [attemptCount, setAttemptCount] = useState(0);
   const [feedback, setFeedback] = useState<{ isCorrect: boolean; hint?: string } | null>(null);
   const [showFeedbackType, setShowFeedbackType] = useState<'correct' | 'incorrect' | null>(null);
+
+  // Peek functionality for Medium mode
+  const [peeksRemaining, setPeeksRemaining] = useState(3);
+  const [isPeeking, setIsPeeking] = useState(false);
 
   // Initialize session on mount
   useEffect(() => {
@@ -95,6 +100,8 @@ export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps):
         setAttemptCount(0);
         setFeedback(null);
         setShowFeedbackType(null);
+        setPeeksRemaining(3); // Reset peeks for new problem
+        setIsPeeking(false);
       }, 2000);
     } else {
       setFeedback({ isCorrect: false, hint: result.hint });
@@ -116,6 +123,8 @@ export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps):
           setAttemptCount(0);
           setFeedback(null);
           setShowFeedbackType(null);
+          setPeeksRemaining(3); // Reset peeks for new problem
+          setIsPeeking(false);
         }, 3000);
       }
     }
@@ -127,9 +136,22 @@ export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps):
       return 'always';
     }
     if (difficulty === 'medium') {
-      return 'peek';
+      return isPeeking ? 'always' : 'none';
     }
     return 'hint';
+  };
+
+  // Handle peek button click
+  const handlePeek = (): void => {
+    if (peeksRemaining > 0 && !isPeeking) {
+      setPeeksRemaining(peeksRemaining - 1);
+      setIsPeeking(true);
+
+      // Hide blocks after 5 seconds
+      setTimeout(() => {
+        setIsPeeking(false);
+      }, 5000);
+    }
   };
 
   if (!currentProblem) {
@@ -173,6 +195,15 @@ export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps):
           operation={currentProblem.operation}
           delta={currentProblem.delta}
           visibility={getVisibility()}
+        />
+      )}
+
+      {/* Peek Button - Medium mode only */}
+      {difficulty === 'medium' && (
+        <PeekButton
+          remaining={peeksRemaining}
+          onClick={handlePeek}
+          disabled={feedback?.isCorrect === true || attemptCount >= 3 || isPeeking}
         />
       )}
 
