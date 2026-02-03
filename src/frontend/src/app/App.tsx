@@ -5,6 +5,7 @@ import { Button } from '../components/ui';
 import { AdditionRaceGame } from '../games/addition-race';
 import { BuildTheNumberGame } from '../games/build-the-number';
 import { DivisionRaceGame } from '../games/division-race';
+import { MoreLessThanGame } from '../games/more-less-than';
 import { MultiplicationRaceGame } from '../games/multiplication-race';
 import { SortTheNumbersGame } from '../games/sort-the-numbers';
 import { SubtractionRaceGame } from '../games/subtraction-race';
@@ -19,6 +20,7 @@ type AppView =
   | 'division-race'
   | 'addition-race'
   | 'subtraction-race'
+  | 'more-less-than'
   | 'difficulty-select';
 
 /**
@@ -127,6 +129,35 @@ const getDifficultyOptions = (gameType: GameType | null): DifficultyOption[] => 
     ];
   }
 
+  if (gameType === 'more-less-than') {
+    return [
+      {
+        mode: 'easy',
+        label: 'Easy',
+        description: 'Numbers 1-10 with full blocks shown',
+        color: 'bg-success/20 border-success hover:bg-success/30',
+      },
+      {
+        mode: 'medium',
+        label: 'Medium',
+        description: 'Numbers 5-30 with peek hints',
+        color: 'bg-primary/20 border-primary hover:bg-primary/30',
+      },
+      {
+        mode: 'hard',
+        label: 'Hard',
+        description: 'Numbers 10-100 with strategy hints',
+        color: 'bg-secondary/20 border-secondary hover:bg-secondary/30',
+      },
+      {
+        mode: 'challenge',
+        label: 'Challenge',
+        description: 'Complex multi-step problems',
+        color: 'bg-accent/20 border-accent hover:bg-accent/30',
+      },
+    ];
+  }
+
   // Default for Build the Number and Sort the Numbers
   return [
     {
@@ -216,6 +247,8 @@ export const App = (): JSX.Element => {
         return 'Addition Race';
       case 'subtraction-race':
         return 'Subtraction Race';
+      case 'more-less-than':
+        return 'More Than / Less Than';
       default:
         return undefined;
     }
@@ -236,6 +269,8 @@ export const App = (): JSX.Element => {
         return 'Addition Race';
       case 'subtraction-race':
         return 'Subtraction Race';
+      case 'more-less-than':
+        return 'More Than / Less Than';
       default:
         return 'Select a Game';
     }
@@ -308,6 +343,8 @@ export const App = (): JSX.Element => {
         return <AdditionRaceGame difficulty={getRaceDifficulty()} />;
       case 'subtraction-race':
         return <SubtractionRaceGame difficulty={getRaceDifficulty()} />;
+      case 'more-less-than':
+        return <MoreLessThanGame difficulty={difficulty} onExit={handleGoHome} />;
       default:
         return <GameMenu onSelectGame={handleSelectGame} />;
     }

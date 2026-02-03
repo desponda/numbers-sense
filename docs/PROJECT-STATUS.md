@@ -13,7 +13,7 @@ A playful, modern, clean, joyful math app that builds number sense (not memoriza
 
 ---
 
-## Current Phase: MVP COMPLETE - READY TO SHIP
+## Current Phase: v1.1 IN PROGRESS - Game 3 Implementation
 
 ### Timeline
 
@@ -24,7 +24,9 @@ A playful, modern, clean, joyful math app that builds number sense (not memoriza
 - **Sprint 0 Completed:** January 24, 2026
 - **Sprint 1 Start:** January 24, 2026
 - **Sprint 1 Completed:** January 24, 2026
-- **MVP Status:** COMPLETE - Ready for staging deployment
+- **MVP v1.0 Status:** DEPLOYED TO STAGING ✅
+- **v1.1 Status:** Game 3 implementation in progress
+- **Game 3 Research:** February 3, 2026
 
 ---
 
@@ -37,8 +39,11 @@ A playful, modern, clean, joyful math app that builds number sense (not memoriza
 | 3   | Architecture     | `technical-blueprint.md`         | COMPLETE | 2,556 |
 | 4   | AI Coding        | `ai-coding-guidelines.md`        | COMPLETE | 1,068 |
 | 5   | Game Design      | `game-mechanics.md`              | COMPLETE | 2,275 |
+| 6   | Subtraction Pedagogy | `subtraction-pedagogy.md`    | COMPLETE | 1,197 |
+| 7   | Subtraction UX   | `subtraction-ux-patterns.md`     | COMPLETE | 1,772 |
+| 8   | Game 3 Design    | `more-less-than-game.md`         | COMPLETE | 1,253 |
 
-**Total Documentation:** 7,668 lines across 5 comprehensive documents
+**Total Documentation:** 10,890 lines across 8 comprehensive documents
 
 ---
 
@@ -129,6 +134,35 @@ A playful, modern, clean, joyful math app that builds number sense (not memoriza
 - Division fact fluency
 - Inverse relationship with multiplication
 - Speed and accuracy
+
+### Game 5: More Than / Less Than
+
+**Concept:** Child learns relational number concepts by solving "N more than X" and "N less than X" problems with visual scaffolding.
+
+| Mode      | Number Range | Visual Support           | Status        |
+| --------- | ------------ | ------------------------ | ------------- |
+| Easy      | 1-10         | Full blocks always shown | 🔄 Planned    |
+| Medium    | 5-30         | Peek system (3 views)    | 🔄 Planned    |
+| Hard      | 10-100       | Hint-only blocks         | 🔄 Planned    |
+| Challenge | 1-100        | Mental math only         | 🔄 Planned    |
+
+**Problem Types:**
+
+- Simple more/less (e.g., "3 more than 5")
+- Crossing 10 (e.g., "6 more than 7")
+- Using tens (e.g., "10 more than 23")
+- Large numbers (e.g., "4 less than 73")
+- Multi-step (Challenge: "5 more than (3 less than 12)")
+
+**Learning Objectives:**
+
+- Relational understanding of addition/subtraction
+- Mental visualization of quantity changes
+- Part-whole reasoning
+- Flexible calculation strategies
+- Place value understanding
+
+**Status:** Research complete (3,222 lines), implementation starting
 
 ---
 
@@ -319,10 +353,13 @@ See `/docs/SPRINT-PLAN.md` for detailed breakdown.
 | UX Validation       | `/docs/UX-VALIDATION-PROCESS.md`                | Mandatory UX process         |
 | UX Principles       | `/docs/research/ux-principles.md`               | Design guidelines            |
 | Learning Science    | `/docs/research/learning-science-principles.md` | Pedagogy principles          |
+| Subtraction Pedagogy| `/docs/research/subtraction-pedagogy.md`        | Addition/subtraction research|
+| Subtraction UX      | `/docs/research/subtraction-ux-patterns.md`     | UX patterns for subtraction  |
 | AI Guidelines       | `/docs/research/ai-coding-guidelines.md`        | Coding practices             |
 | Technical Blueprint | `/docs/architecture/technical-blueprint.md`     | System architecture          |
 | Game Mechanics      | `/docs/specs/game-mechanics.md`                 | Game specifications          |
 | Race Games Spec     | `/docs/specs/multiplication-race-game.md`       | Multiplication/Division Race |
+| More/Less Game Spec | `/docs/specs/more-less-than-game.md`            | More Than/Less Than Game     |
 
 ---
 
@@ -339,3 +376,4 @@ See `/docs/SPRINT-PLAN.md` for detailed breakdown.
 | 2026-01-24 | Audio feedback implemented. Synthesized sounds for all game interactions.                                                                                                                          |
 | 2026-01-24 | Playwright E2E tests passing. All 46 tests green (Chromium + Mobile Chrome). iPad tests removed to optimize test duration. Test suite now 149 unit + 46 E2E tests.                                  |
 | 2026-01-24 | Race games added. Multiplication and Division Race with adaptive question drawer. 320 unit tests + 52 E2E tests. UX validation process documented.                                                  |
+| 2026-02-03 | Game 3 research completed. 3 research agents delivered 3,222 lines of documentation: subtraction pedagogy, UX patterns, game specification. Sprint 9 planning started for v1.1 implementation.    |

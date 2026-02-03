@@ -172,6 +172,56 @@ const generateSortTheNumbersProblem = (options: GeneratorOptions): Problem => {
 };
 
 /**
+ * Generate a problem for More Than / Less Than game
+ *
+ * Generates problems like "3 more than 5" or "2 less than 8"
+ * Ensures results stay within valid range (no negative numbers)
+ */
+const generateMoreLessThanProblem = (options: GeneratorOptions): Problem => {
+  const { difficulty } = options;
+  const config = DIFFICULTY_CONFIGS[difficulty];
+
+  // Define delta ranges per difficulty
+  const deltaRanges: Record<DifficultyMode, number[]> = {
+    easy: [1, 2],
+    medium: [1, 2, 3, 5, 10],
+    hard: [1, 2, 3, 4, 5, 10, 20],
+    challenge: [5, 10, 15, 20, 25],
+  };
+
+  // Select operation (50/50 more vs less)
+  const operation: 'more' | 'less' = Math.random() < 0.5 ? 'more' : 'less';
+
+  // Select delta
+  const deltas = deltaRanges[difficulty];
+  const deltaIndex = randomInt(0, deltas.length - 1);
+  const delta = deltas[deltaIndex] ?? 1; // Fallback to 1 if undefined
+
+  // Generate valid starting number
+  // For "more": ensure starting + delta <= maxValue
+  // For "less": ensure starting - delta >= minValue (and >= 0)
+  let startingNumber: number;
+  if (operation === 'more') {
+    startingNumber = randomInt(config.minValue, config.maxValue - delta);
+  } else {
+    startingNumber = randomInt(Math.max(config.minValue, delta), config.maxValue);
+  }
+
+  const targetValue = operation === 'more' ? startingNumber + delta : startingNumber - delta;
+
+  return {
+    id: generateProblemId(),
+    gameId: 'more-less-than',
+    startingNumber,
+    operation,
+    delta,
+    targetValue,
+    difficulty,
+    createdAt: Date.now(),
+  };
+};
+
+/**
  * Main problem generator function
  */
 export const generateProblem = (options: GeneratorOptions): Problem => {
@@ -182,6 +232,8 @@ export const generateProblem = (options: GeneratorOptions): Problem => {
       return generateBuildTheNumberProblem(options);
     case 'sort-the-numbers':
       return generateSortTheNumbersProblem(options);
+    case 'more-less-than':
+      return generateMoreLessThanProblem(options);
     default:
       throw new Error(`Unknown game: ${String(gameId)}`);
   }

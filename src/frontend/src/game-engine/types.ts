@@ -15,7 +15,7 @@ export interface Block {
 }
 
 // Game identifiers
-export type GameId = 'build-the-number' | 'sort-the-numbers';
+export type GameId = 'build-the-number' | 'sort-the-numbers' | 'more-less-than';
 
 // Difficulty modes with number ranges
 export type DifficultyMode = 'easy' | 'medium' | 'hard' | 'challenge';
@@ -56,14 +56,36 @@ export const DIFFICULTY_CONFIGS: Record<DifficultyMode, DifficultyConfig> = {
   },
 };
 
-// Problem representation
-export interface Problem {
+// Problem representation - Base interface
+interface BaseProblem {
   id: string;
-  gameId: GameId;
-  targetValue: number;
   difficulty: DifficultyMode;
   createdAt: number;
 }
+
+// Build the Number problem
+export interface BuildTheNumberProblem extends BaseProblem {
+  gameId: 'build-the-number';
+  targetValue: number;
+}
+
+// Sort the Numbers problem
+export interface SortTheNumbersProblem extends BaseProblem {
+  gameId: 'sort-the-numbers';
+  targetValue: number; // Number of items to sort
+}
+
+// More Than / Less Than problem
+export interface MoreLessThanProblem extends BaseProblem {
+  gameId: 'more-less-than';
+  startingNumber: number;
+  operation: 'more' | 'less';
+  delta: number;
+  targetValue: number; // Computed answer
+}
+
+// Discriminated union of all problem types
+export type Problem = BuildTheNumberProblem | SortTheNumbersProblem | MoreLessThanProblem;
 
 // Answer/attempt tracking
 export interface Attempt {
@@ -71,6 +93,7 @@ export interface Attempt {
   totalValue: number;
   timestamp: number;
   isCorrect: boolean;
+  answerValue?: number; // For games using number input (e.g., more-less-than)
 }
 
 // Session tracking
@@ -87,6 +110,9 @@ export interface GameSession {
   problemsAttempted: number;
   correctStreak: number;
   longestStreak: number;
+  // More-less-than specific state
+  answerValue?: number | null;
+  peeksRemaining?: number;
 }
 
 // Result tracking

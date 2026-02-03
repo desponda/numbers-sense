@@ -8,7 +8,8 @@ export type GameType =
   | 'multiplication-race'
   | 'division-race'
   | 'addition-race'
-  | 'subtraction-race';
+  | 'subtraction-race'
+  | 'more-less-than';
 
 export interface GameMenuProps {
   /** Handler when a game is selected */
@@ -158,6 +159,16 @@ export const GameMenu = ({ onSelectGame }: GameMenuProps): JSX.Element => {
           iconColor="#F09D81"
           onClick={() => {
             onSelectGame('subtraction-race');
+          }}
+        />
+
+        <GameCard
+          title="More Than / Less Than"
+          description="Solve word problems with blocks!"
+          iconText="⋚"
+          iconColor="#6B9FD6"
+          onClick={() => {
+            onSelectGame('more-less-than');
           }}
         />
       </div>

@@ -188,6 +188,193 @@ describe('problemGenerator', () => {
     });
   });
 
+  describe('generateMoreLessThanProblem', () => {
+    it('generates a More Than / Less Than problem with correct structure', () => {
+      vi.spyOn(Math, 'random').mockRestore();
+
+      const problem = generateProblem({
+        gameId: 'more-less-than',
+        difficulty: 'easy',
+      });
+
+      expect(problem.gameId).toBe('more-less-than');
+      expect(problem.difficulty).toBe('easy');
+      expect(problem.id).toMatch(/^problem-\d+-[a-z0-9]+$/);
+      expect(problem.createdAt).toBeGreaterThan(0);
+
+      if (problem.gameId === 'more-less-than') {
+        expect(['more', 'less']).toContain(problem.operation);
+        expect(problem.startingNumber).toBeGreaterThanOrEqual(1);
+        expect(problem.delta).toBeGreaterThan(0);
+        expect(problem.targetValue).toBeGreaterThanOrEqual(0);
+      }
+    });
+
+    it('generates valid "more" operations in easy mode', () => {
+      vi.spyOn(Math, 'random').mockRestore();
+
+      for (let i = 0; i < 20; i += 1) {
+        const problem = generateProblem({
+          gameId: 'more-less-than',
+          difficulty: 'easy',
+        });
+
+        if (problem.gameId === 'more-less-than') {
+          // Easy: 1-10 range, delta 1-2
+          expect(problem.startingNumber).toBeGreaterThanOrEqual(1);
+          expect(problem.startingNumber).toBeLessThanOrEqual(10);
+          expect(problem.delta).toBeGreaterThanOrEqual(1);
+          expect(problem.delta).toBeLessThanOrEqual(2);
+          expect(problem.targetValue).toBeGreaterThanOrEqual(0);
+          expect(problem.targetValue).toBeLessThanOrEqual(10);
+
+          // Verify calculation
+          const expected =
+            problem.operation === 'more'
+              ? problem.startingNumber + problem.delta
+              : problem.startingNumber - problem.delta;
+          expect(problem.targetValue).toBe(expected);
+        }
+      }
+    });
+
+    it('generates valid "less" operations without negative results', () => {
+      vi.spyOn(Math, 'random').mockRestore();
+
+      for (let i = 0; i < 50; i += 1) {
+        const problem = generateProblem({
+          gameId: 'more-less-than',
+          difficulty: 'easy',
+        });
+
+        if (problem.gameId === 'more-less-than' && problem.operation === 'less') {
+          // Should never produce negative results
+          expect(problem.targetValue).toBeGreaterThanOrEqual(0);
+          expect(problem.startingNumber).toBeGreaterThanOrEqual(problem.delta);
+        }
+      }
+    });
+
+    it('respects difficulty range for medium mode', () => {
+      vi.spyOn(Math, 'random').mockRestore();
+
+      for (let i = 0; i < 20; i += 1) {
+        const problem = generateProblem({
+          gameId: 'more-less-than',
+          difficulty: 'medium',
+        });
+
+        if (problem.gameId === 'more-less-than') {
+          // Medium: 1-20 range, delta 1,2,3,5,10
+          expect(problem.startingNumber).toBeGreaterThanOrEqual(1);
+          expect(problem.startingNumber).toBeLessThanOrEqual(20);
+          expect([1, 2, 3, 5, 10]).toContain(problem.delta);
+          expect(problem.targetValue).toBeGreaterThanOrEqual(0);
+          expect(problem.targetValue).toBeLessThanOrEqual(20);
+        }
+      }
+    });
+
+    it('respects difficulty range for hard mode', () => {
+      vi.spyOn(Math, 'random').mockRestore();
+
+      for (let i = 0; i < 20; i += 1) {
+        const problem = generateProblem({
+          gameId: 'more-less-than',
+          difficulty: 'hard',
+        });
+
+        if (problem.gameId === 'more-less-than') {
+          // Hard: 1-100 range, delta 1,2,3,4,5,10,20
+          expect(problem.startingNumber).toBeGreaterThanOrEqual(1);
+          expect(problem.startingNumber).toBeLessThanOrEqual(100);
+          expect([1, 2, 3, 4, 5, 10, 20]).toContain(problem.delta);
+          expect(problem.targetValue).toBeGreaterThanOrEqual(0);
+          expect(problem.targetValue).toBeLessThanOrEqual(100);
+        }
+      }
+    });
+
+    it('respects difficulty range for challenge mode', () => {
+      vi.spyOn(Math, 'random').mockRestore();
+
+      for (let i = 0; i < 20; i += 1) {
+        const problem = generateProblem({
+          gameId: 'more-less-than',
+          difficulty: 'challenge',
+        });
+
+        if (problem.gameId === 'more-less-than') {
+          // Challenge: 1-100 range, delta 5,10,15,20,25
+          expect(problem.startingNumber).toBeGreaterThanOrEqual(1);
+          expect(problem.startingNumber).toBeLessThanOrEqual(100);
+          expect([5, 10, 15, 20, 25]).toContain(problem.delta);
+          expect(problem.targetValue).toBeGreaterThanOrEqual(0);
+          expect(problem.targetValue).toBeLessThanOrEqual(100);
+        }
+      }
+    });
+
+    it('generates roughly 50/50 mix of more and less operations', () => {
+      vi.spyOn(Math, 'random').mockRestore();
+
+      const operations = { more: 0, less: 0 };
+
+      for (let i = 0; i < 100; i += 1) {
+        const problem = generateProblem({
+          gameId: 'more-less-than',
+          difficulty: 'medium',
+        });
+
+        if (problem.gameId === 'more-less-than') {
+          operations[problem.operation] += 1;
+        }
+      }
+
+      // Should be roughly balanced (30-70% range is reasonable)
+      expect(operations.more).toBeGreaterThan(30);
+      expect(operations.more).toBeLessThan(70);
+      expect(operations.less).toBeGreaterThan(30);
+      expect(operations.less).toBeLessThan(70);
+    });
+
+    it('generates unique problem IDs', () => {
+      vi.spyOn(Math, 'random').mockRestore();
+
+      const ids = new Set<string>();
+      for (let i = 0; i < 50; i += 1) {
+        const problem = generateProblem({
+          gameId: 'more-less-than',
+          difficulty: 'medium',
+        });
+        ids.add(problem.id);
+      }
+
+      expect(ids.size).toBe(50);
+    });
+
+    it('generates problem batches correctly', () => {
+      vi.spyOn(Math, 'random').mockRestore();
+
+      const batch = generateProblemBatch('more-less-than', 'medium', 10);
+
+      expect(batch).toHaveLength(10);
+      batch.forEach((problem) => {
+        expect(problem.gameId).toBe('more-less-than');
+        expect(problem.difficulty).toBe('medium');
+
+        if (problem.gameId === 'more-less-than') {
+          // Verify calculation
+          const expected =
+            problem.operation === 'more'
+              ? problem.startingNumber + problem.delta
+              : problem.startingNumber - problem.delta;
+          expect(problem.targetValue).toBe(expected);
+        }
+      });
+    });
+  });
+
   describe('generateSortTheNumbersValues', () => {
     it('generates the requested number of values', () => {
       vi.spyOn(Math, 'random').mockRestore();
