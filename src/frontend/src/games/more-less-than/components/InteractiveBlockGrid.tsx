@@ -35,11 +35,16 @@ export const InteractiveBlockGrid = ({
   onComplete,
   onSkip,
 }: InteractiveBlockGridProps): JSX.Element => {
+  // For "less": tracks indices of blocks marked for removal
+  // For "more": tracks indices of new blocks that have been added
   const [selectedIndices, setSelectedIndices] = useState<Set<number>>(new Set());
 
-  // Decompose starting number into tens and units
-  const tens = Math.floor(startingNumber / 10);
-  const units = startingNumber % 10;
+  // For "less" operation: decompose starting number
+  // For "more" operation: decompose starting number + show additional empty blocks
+  const totalBlocksToShow =
+    operation === 'less' ? startingNumber : startingNumber + targetRemovalCount;
+  const tens = Math.floor(totalBlocksToShow / 10);
+  const units = totalBlocksToShow % 10;
 
   const toggleBlock = (index: number): void => {
     const newSelected = new Set(selectedIndices);
@@ -54,17 +59,23 @@ export const InteractiveBlockGrid = ({
 
   const handleDone = (): void => {
     if (selectedIndices.size === targetRemovalCount) {
-      // Calculate remaining number
-      const remaining =
+      // Calculate resulting number
+      const result =
         operation === 'less'
           ? startingNumber - targetRemovalCount
           : startingNumber + targetRemovalCount;
-      onComplete(remaining);
+      onComplete(result);
     }
   };
 
   const isCorrectCount = selectedIndices.size === targetRemovalCount;
   const currentCount = selectedIndices.size;
+
+  // Calculate current number of blocks based on operation
+  const currentBlockCount =
+    operation === 'less'
+      ? startingNumber - currentCount // Removing blocks
+      : startingNumber + currentCount; // Adding blocks
 
   const blockPlural = targetRemovalCount > 1 ? 's' : '';
   const instructionText =
@@ -72,12 +83,27 @@ export const InteractiveBlockGrid = ({
       ? `Take away ${String(targetRemovalCount)} block${blockPlural}`
       : `Add ${String(targetRemovalCount)} block${blockPlural}`;
 
+  // Helper to determine if a block is part of the starting set or a new block to be added
+  const isNewBlock = (index: number): boolean => {
+    if (operation === 'less') {
+      return false; // All blocks are original in "less" mode
+    }
+    // In "more" mode, blocks beyond startingNumber are new blocks to be added
+    return index >= startingNumber;
+  };
+
   return (
     <div className="flex flex-col items-center gap-6 p-6 bg-white rounded-xl shadow-sm">
       {/* Instruction */}
       <h3 className="text-2xl font-semibold text-gray-800">{instructionText}</h3>
 
-      {/* Counter */}
+      {/* Current Block Count - Large and Prominent */}
+      <div className="flex flex-col items-center gap-2">
+        <div className="text-5xl font-bold text-teal-600">{String(currentBlockCount)}</div>
+        <div className="text-lg text-gray-600">current blocks</div>
+      </div>
+
+      {/* Progress Counter */}
       <div
         className={`text-xl font-bold ${((): string => {
           if (isCorrectCount) {
@@ -99,30 +125,47 @@ export const InteractiveBlockGrid = ({
         {/* Render ten rods */}
         {Array.from({ length: tens }).map((_, index) => {
           const isSelected = selectedIndices.has(index);
+          const isNew = isNewBlock(index);
+
+          // For "more" operation: new blocks start as outlines and become solid when selected
+          // For "less" operation: all blocks start solid and become marked when selected
+          const shouldShowOutline = operation === 'more' && isNew && !isSelected;
+          const shouldShowStrikethrough = operation === 'less' && isSelected;
+
           return (
             <button
               key={`ten-${String(index)}`}
               type="button"
               onClick={() => {
+                // Only allow clicking new blocks in "more" mode, or any block in "less" mode
+                if (operation === 'more' && !isNew) {
+                  return; // Can't select original blocks in add mode
+                }
                 toggleBlock(index);
               }}
               className={`
                 relative transition-all duration-200
                 min-w-[64px] min-h-[64px]
-                ${isSelected ? 'opacity-40' : 'opacity-100 hover:opacity-80'}
-                ${isSelected ? 'scale-95' : 'scale-100'}
+                ${shouldShowOutline ? 'opacity-30 border-2 border-dashed border-gray-400' : ''}
+                ${shouldShowStrikethrough ? 'opacity-40 scale-95' : 'opacity-100 hover:opacity-80 scale-100'}
+                ${operation === 'more' && !isNew ? 'cursor-default' : 'cursor-pointer'}
               `}
-              aria-label={`Ten rod ${String(index + 1)}, ${isSelected ? 'selected' : 'not selected'}`}
+              aria-label={`Ten rod ${String(index + 1)}, ${isSelected ? 'selected' : 'not selected'}${isNew ? ', new block' : ''}`}
             >
               <TenRod
                 id={`ten-${String(index)}`}
                 disabled
-                className={isSelected ? 'grayscale' : ''}
+                className={shouldShowStrikethrough ? 'grayscale' : ''}
               />
-              {isSelected && (
+              {shouldShowStrikethrough && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="w-full h-1 bg-red-500 rotate-45" />
                   <div className="w-full h-1 bg-red-500 -rotate-45 absolute" />
+                </div>
+              )}
+              {shouldShowOutline && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="text-4xl text-gray-400 font-bold">+</div>
                 </div>
               )}
             </button>
@@ -133,30 +176,45 @@ export const InteractiveBlockGrid = ({
         {Array.from({ length: units }).map((_, index) => {
           const blockIndex = tens + index;
           const isSelected = selectedIndices.has(blockIndex);
+          const isNew = isNewBlock(blockIndex);
+
+          const shouldShowOutline = operation === 'more' && isNew && !isSelected;
+          const shouldShowStrikethrough = operation === 'less' && isSelected;
+
           return (
             <button
               key={`unit-${String(index)}`}
               type="button"
               onClick={() => {
+                // Only allow clicking new blocks in "more" mode, or any block in "less" mode
+                if (operation === 'more' && !isNew) {
+                  return; // Can't select original blocks in add mode
+                }
                 toggleBlock(blockIndex);
               }}
               className={`
                 relative transition-all duration-200
                 min-w-[64px] min-h-[64px]
-                ${isSelected ? 'opacity-40' : 'opacity-100 hover:opacity-80'}
-                ${isSelected ? 'scale-95' : 'scale-100'}
+                ${shouldShowOutline ? 'opacity-30 border-2 border-dashed border-gray-400 rounded-lg' : ''}
+                ${shouldShowStrikethrough ? 'opacity-40 scale-95' : 'opacity-100 hover:opacity-80 scale-100'}
+                ${operation === 'more' && !isNew ? 'cursor-default' : 'cursor-pointer'}
               `}
-              aria-label={`Unit cube ${String(index + 1)}, ${isSelected ? 'selected' : 'not selected'}`}
+              aria-label={`Unit cube ${String(index + 1)}, ${isSelected ? 'selected' : 'not selected'}${isNew ? ', new block' : ''}`}
             >
               <UnitCube
                 id={`unit-${String(blockIndex)}`}
                 disabled
-                className={isSelected ? 'grayscale' : ''}
+                className={shouldShowStrikethrough ? 'grayscale' : ''}
               />
-              {isSelected && (
+              {shouldShowStrikethrough && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="w-3/4 h-1 bg-red-500 rotate-45" />
                   <div className="w-3/4 h-1 bg-red-500 -rotate-45 absolute" />
+                </div>
+              )}
+              {shouldShowOutline && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="text-2xl text-gray-400 font-bold">+</div>
                 </div>
               )}
             </button>
