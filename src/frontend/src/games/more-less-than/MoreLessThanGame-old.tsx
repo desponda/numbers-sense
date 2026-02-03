@@ -6,8 +6,8 @@ import { useGameSessionStore } from '../../game-engine/stores/gameSessionStore';
 
 import { AnswerInput } from './components/AnswerInput';
 import { FeedbackDisplay } from './components/FeedbackDisplay';
-import { InteractiveBlockGrid } from './components/InteractiveBlockGrid';
 import { PeekButton } from './components/PeekButton';
+import { ProblemDisplay } from './components/ProblemDisplay';
 import { VisualScaffold } from './components/VisualScaffold';
 import { validateAnswer } from './utils/validation';
 
@@ -18,27 +18,33 @@ export interface MoreLessThanGameProps {
   onExit?: () => void;
 }
 
-type GamePhase = 'interacting' | 'answering' | 'complete';
-
 /**
- * MoreLessThanGame - Interactive "More Than / Less Than" learning game.
+ * MoreLessThanGame - Main game component for "More Than / Less Than" game.
  *
- * New flow (Easy/Medium):
- * 1. INTERACTION PHASE: Child manipulates blocks (tap to remove/add)
- * 2. ANSWERING PHASE: "What number do you have now?" - child types answer
- * 3. COMPLETE PHASE: Feedback and next problem
+ * Game flow:
+ * 1. Display problem (e.g., "What is 3 more than 5?")
+ * 2. Show visual scaffold (if difficulty allows)
+ * 3. Accept numerical answer input
+ * 4. Validate and provide progressive feedback
+ * 5. Allow up to 3 attempts
+ * 6. Show answer after 3 incorrect attempts
+ * 7. Generate next problem
  *
- * Hard/Challenge: Skip interaction, mental math only
+ * Features:
+ * - Progressive feedback system (attempt 1: generic, attempt 2: hint, attempt 3: answer)
+ * - Visual scaffolding for Easy mode
+ * - Integration with game engine store for session tracking
+ * - Streak tracking
+ * - Problem variety via problem generator
  *
- * Pedagogical approach:
- * - Concrete: Physical block manipulation
- * - Representational: See blocks transform
- * - Abstract: Identify resulting number
+ * @example
+ * ```tsx
+ * <MoreLessThanGame difficulty="easy" onExit={() => navigate('/')} />
+ * ```
  */
 export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps): JSX.Element => {
   const { session, setProblem, completeProblem, startSession } = useGameSessionStore();
   const [currentProblem, setCurrentProblem] = useState<MoreLessThanProblem | null>(null);
-  const [phase, setPhase] = useState<GamePhase>('interacting');
   const [answerValue, setAnswerValue] = useState<number | null>(null);
   const [attemptCount, setAttemptCount] = useState(0);
   const [feedback, setFeedback] = useState<{ isCorrect: boolean; hint?: string } | null>(null);
@@ -47,10 +53,6 @@ export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps):
   // Peek functionality for Medium mode
   const [peeksRemaining, setPeeksRemaining] = useState(3);
   const [isPeeking, setIsPeeking] = useState(false);
-  const [showStaticBlocks, setShowStaticBlocks] = useState(false);
-
-  // Determine if this difficulty uses interactive blocks
-  const usesInteraction = difficulty === 'easy' || difficulty === 'medium';
 
   // Initialize session on mount
   useEffect(() => {
@@ -68,38 +70,7 @@ export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps):
 
     setCurrentProblem(problem);
     setProblem(problem);
-    setPhase(usesInteraction ? 'interacting' : 'answering');
-  }, [difficulty, setProblem, usesInteraction]);
-
-  // Reset state for new problem
-  const loadNextProblem = (): void => {
-    const nextProblem = generateProblem({
-      gameId: 'more-less-than',
-      difficulty,
-    }) as MoreLessThanProblem;
-
-    setCurrentProblem(nextProblem);
-    setProblem(nextProblem);
-    setPhase(usesInteraction ? 'interacting' : 'answering');
-    setAnswerValue(null);
-    setAttemptCount(0);
-    setFeedback(null);
-    setShowFeedbackType(null);
-    setPeeksRemaining(3);
-    setIsPeeking(false);
-    setShowStaticBlocks(false);
-  };
-
-  // Handle completion of interactive phase
-  const handleInteractionComplete = (): void => {
-    setShowStaticBlocks(true); // Keep blocks visible for Medium mode
-    setPhase('answering');
-  };
-
-  // Handle skip interaction button
-  const handleSkipInteraction = (): void => {
-    setPhase('answering');
-  };
+  }, [difficulty, setProblem]);
 
   // Handle answer submission
   const handleSubmit = (): void => {
@@ -114,12 +85,23 @@ export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps):
     if (result.isCorrect) {
       setFeedback({ isCorrect: true });
       setShowFeedbackType('correct');
-      setPhase('complete');
       completeProblem(true);
 
       // Next problem after 2 seconds
       setTimeout(() => {
-        loadNextProblem();
+        const nextProblem = generateProblem({
+          gameId: 'more-less-than',
+          difficulty,
+        }) as MoreLessThanProblem;
+
+        setCurrentProblem(nextProblem);
+        setProblem(nextProblem);
+        setAnswerValue(null);
+        setAttemptCount(0);
+        setFeedback(null);
+        setShowFeedbackType(null);
+        setPeeksRemaining(3); // Reset peeks for new problem
+        setIsPeeking(false);
       }, 2000);
     } else {
       setFeedback({ isCorrect: false, hint: result.hint });
@@ -127,14 +109,36 @@ export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps):
 
       // If 3 attempts, show answer and move to next
       if (newAttemptCount >= 3) {
-        setPhase('complete');
         completeProblem(false);
 
         setTimeout(() => {
-          loadNextProblem();
+          const nextProblem = generateProblem({
+            gameId: 'more-less-than',
+            difficulty,
+          }) as MoreLessThanProblem;
+
+          setCurrentProblem(nextProblem);
+          setProblem(nextProblem);
+          setAnswerValue(null);
+          setAttemptCount(0);
+          setFeedback(null);
+          setShowFeedbackType(null);
+          setPeeksRemaining(3); // Reset peeks for new problem
+          setIsPeeking(false);
         }, 3000);
       }
     }
+  };
+
+  // Determine visibility based on difficulty
+  const getVisibility = (): 'always' | 'peek' | 'hint' | 'none' => {
+    if (difficulty === 'easy') {
+      return 'always';
+    }
+    if (difficulty === 'medium') {
+      return isPeeking ? 'always' : 'none';
+    }
+    return 'hint';
   };
 
   // Handle peek button click
@@ -181,71 +185,39 @@ export const MoreLessThanGame = ({ difficulty, onExit }: MoreLessThanGameProps):
         )}
       </div>
 
-      {/* PHASE 1: Interactive Block Manipulation */}
-      {phase === 'interacting' && (
-        <InteractiveBlockGrid
+      {/* Problem Display */}
+      <ProblemDisplay problem={currentProblem} />
+
+      {/* Visual Scaffold - Show for Easy (always) and Medium (peek) modes */}
+      {(difficulty === 'easy' || difficulty === 'medium') && (
+        <VisualScaffold
           startingNumber={currentProblem.startingNumber}
-          targetRemovalCount={currentProblem.delta}
           operation={currentProblem.operation}
-          onComplete={handleInteractionComplete}
-          onSkip={handleSkipInteraction}
+          delta={currentProblem.delta}
+          visibility={getVisibility()}
         />
       )}
 
-      {/* PHASE 2: Answer Question */}
-      {phase === 'answering' && (
-        <>
-          {/* Question */}
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">What number do you have now?</h2>
-            <p className="text-xl text-gray-600">
-              You started with {currentProblem.startingNumber}, then{' '}
-              {currentProblem.operation === 'more' ? 'added' : 'removed'} {currentProblem.delta}.
-            </p>
-          </div>
-
-          {/* Static blocks for reference (Medium mode after interaction, or peek) */}
-          {difficulty === 'medium' && (showStaticBlocks || isPeeking) && (
-            <VisualScaffold
-              startingNumber={currentProblem.startingNumber}
-              operation={currentProblem.operation}
-              delta={currentProblem.delta}
-              visibility="always"
-            />
-          )}
-
-          {/* Peek Button - Medium mode only */}
-          {difficulty === 'medium' && !showStaticBlocks && (
-            <PeekButton
-              remaining={peeksRemaining}
-              onClick={handlePeek}
-              disabled={feedback?.isCorrect === true || attemptCount >= 3 || isPeeking}
-            />
-          )}
-
-          {/* Answer Input */}
-          <AnswerInput
-            value={answerValue}
-            onChange={setAnswerValue}
-            onSubmit={handleSubmit}
-            disabled={feedback?.isCorrect === true || attemptCount >= 3}
-            showFeedback={showFeedbackType ?? null}
-          />
-
-          {/* Feedback */}
-          {feedback && (
-            <FeedbackDisplay
-              attemptNumber={attemptCount as 1 | 2 | 3}
-              isCorrect={feedback.isCorrect}
-              hint={feedback.hint}
-              correctAnswer={attemptCount >= 3 ? currentProblem.targetValue : undefined}
-            />
-          )}
-        </>
+      {/* Peek Button - Medium mode only */}
+      {difficulty === 'medium' && (
+        <PeekButton
+          remaining={peeksRemaining}
+          onClick={handlePeek}
+          disabled={feedback?.isCorrect === true || attemptCount >= 3 || isPeeking}
+        />
       )}
 
-      {/* PHASE 3: Complete (just feedback, waiting for next) */}
-      {phase === 'complete' && feedback && (
+      {/* Answer Input */}
+      <AnswerInput
+        value={answerValue}
+        onChange={setAnswerValue}
+        onSubmit={handleSubmit}
+        disabled={feedback?.isCorrect === true || attemptCount >= 3}
+        showFeedback={showFeedbackType ?? null}
+      />
+
+      {/* Feedback */}
+      {feedback && (
         <FeedbackDisplay
           attemptNumber={attemptCount as 1 | 2 | 3}
           isCorrect={feedback.isCorrect}

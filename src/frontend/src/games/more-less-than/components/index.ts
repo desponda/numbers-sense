@@ -15,3 +15,6 @@ export type { StrategyHintsProps } from './StrategyHints';
 
 export { NumberPad } from './NumberPad';
 export type { NumberPadProps } from './NumberPad';
+
+export { InteractiveBlockGrid } from './InteractiveBlockGrid';
+export type { InteractiveBlockGridProps } from './InteractiveBlockGrid';
